@@ -5,7 +5,7 @@
 <%@ include file="../setting.jsp" %>
 
 <script type="text/javascript">
-	function changeDuration(){
+	function changeDuration(){	//시간이바뀔때 
 		var video = document.getElementById("video");
 		var totalTime = document.getElementById("totalTime");
 		var currentTime = document.getElementById("currentTime");
@@ -36,7 +36,7 @@
         var currentTotal = currentmin + ":" + currentsec;
         currentTime.innerHTML = currentTotal;
 	}
-	function startTime(){
+	function startTime(){	//동영상 재생시 현재 시간을 저장
 		var startTime = document.getElementById("startTime");
 		var date = new Date();
 		
@@ -62,7 +62,8 @@
 					startSeconds.value;
 		startTime.innerHTML = time;
 	}
-	function endTime(round_no){
+	function endTime(round_no){	//종료시, 동영상 정지시
+		
 		var endTime = document.getElementById("endTime");
 		var playTime = document.getElementById("playTime");
 		
@@ -108,6 +109,7 @@
 		var tt = opener.document.getElementById("totalTime_"+round_no).value * 1;
 		var ts = (timeGap.getHours() * 3600) + (timeGap.getMinutes()*60) + timeGap.getSeconds();
 		
+		//시청시간을 계산해서 부모창에 뿌려준다
 		opener.document.getElementById("totalTime_"+round_no).value = parseInt(ts+tt);
 		opener.document.getElementById("totalTime2_"+round_no).value = (parseInt(ts+tt)/60)+"분 "+(parseInt(ts+tt)%60)+"초";
 	}
@@ -159,7 +161,6 @@
 </script>
 
 <body>
-	<%-- <%@include file="../layout/header_ara.jsp"%> --%>
 
 		
 	<input type="hidden" name="pageNum" value="${pageNum}">
@@ -179,7 +180,7 @@
 		<input type="hidden" id="startMinutes">
 		<input type="hidden" id="startSeconds">
 		<button class="btn_mint" type="button" id="close" onclick="video.pause(); watch_time('${lec_no}|${round_no}'); ">종료</button>
-		<button class="btn_mint" type="button" id="play" class="btn_play">재생</button>
+		
 		<!-- <button type="button" id="pause" class="btn_pause" style="display:none">일시정지</button>
 		<button type="button" id="stop" class="btn_stop">정지</button>
 		<button type="button" id="mute" class="btn_mute">음소거</button>
@@ -194,6 +195,6 @@
 		<div id="playTime" class="playTime" style="display:none">00:00</div>
 		        
     </div>
-	<%-- <%@include file="../layout/footer_lib.jsp"%> --%>
+	
 </body>
 </html>

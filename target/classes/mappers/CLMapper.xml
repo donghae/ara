@@ -123,6 +123,7 @@
 	<select id="getNotice" resultType="com.spring.projectFinal.CLVO.CyberNoticeVO">
 		SELECT * FROM TBL_CYBER_NOTICE WHERE cy_n_no=#{cy_n_no}
 	</select>
+	
 	<select id="getRoundCnt" resultType="int" parameterType="java.util.Map">
 		SELECT count(*) FROM TBL_CY_LECTURE WHERE lec_no=#{lec_no} ORDER BY round_no
 	</select>

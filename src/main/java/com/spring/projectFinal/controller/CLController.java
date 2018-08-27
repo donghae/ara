@@ -69,6 +69,7 @@ public class CLController {
 		
 		return "cyber/cy_add";
 	}
+	//동영상 재생하는 팝업창
 	@RequestMapping("cy_form")
 	public String cy_form(HttpServletRequest req, Model model) {
 		model.addAttribute("file_name", req.getParameter("file_name"));
@@ -104,12 +105,13 @@ public class CLController {
 	
 	
 	
-	
+	//온라인강의 수업 목록
 	@RequestMapping("cy_select_lec_list")
 	public String cy_select_lec_list(HttpServletRequest req, Model model) {
 		service.getRoundList(req, model);
 		return "cyber/cy_select_lec_list";
 	}
+	//온라인 강의 수업 추가
 	@RequestMapping("cy_select_lec_add")
 	public String cy_select_lec_add(HttpServletRequest req, Model model) {
 		model.addAttribute("lec_no", Integer.parseInt(req.getParameter("lec_no")));
@@ -154,6 +156,7 @@ public class CLController {
 		return "cyber/cy_lec_notice_write_pro";
 	}
 	
+	//온라인 출석
 	@RequestMapping("cy_attendance")
 	public String cy_attendance(HttpServletRequest req, Model model) {		
 		

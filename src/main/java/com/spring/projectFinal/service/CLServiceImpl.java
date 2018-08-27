@@ -44,12 +44,14 @@ public class CLServiceImpl implements CLService{
 	@Autowired
 	CLDAO dao;
 	
+	//동영상 추가
 	@Override
 	public void addRound(MultipartHttpServletRequest req, Model model) {
 		// TODO Auto-generated method stub
 		MultipartFile file = req.getFile("lectureVideo");
 		String saveDir = req.getRealPath("/resources/video/"); //저장 경로(C:\Dev\workspace\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\SPRING_BMS_Project\resources\images\)
 		
+		//파일명이 중복되지않도록 파일명 뒤에 날짜를 붙여준다
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_hhmmss");
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
         String fileName = "";
@@ -64,6 +66,7 @@ public class CLServiceImpl implements CLService{
 	        if(!file.isEmpty()) {
 	        	file.transferTo(new File(saveDir+fileName));
 	            
+	        	//파일업로드 부분
 	            FileInputStream fis = new FileInputStream(saveDir + fileName);
 	            FileOutputStream fos = new FileOutputStream(realDir + fileName);
 	            
@@ -76,17 +79,22 @@ public class CLServiceImpl implements CLService{
 	            fos.close();
 	            
 
+	            //IContainer를 이용하여 업로드한 동영상의 길이를 구한다
 	            IContainer container = IContainer.make();
 	            int result = container.open(saveDir + fileName, IContainer.Type.READ, null);
 	            long duration = container.getDuration();
 	            long fileSize = container.getFileSize();
 	            
 	            
-	            
+	            //강의 번호
 	            int lec_no = Integer.parseInt(req.getParameter("lec_no"));
+	            //수업 주차
 	            int round_no = Integer.parseInt(req.getParameter("round_no"));
+	            //수업명
 	            String round_name = req.getParameter("round_name");
+	            //파일명
 	            String file_name = fileName;
+	            //파일길이
 	            long file_len = duration/1000000;
 	            
 	            RoundVO vo = new RoundVO();
@@ -96,6 +104,7 @@ public class CLServiceImpl implements CLService{
 	            vo.setFile_name(file_name);
 	            vo.setFile_len(file_len);
 	                       
+	            //추가
 	            int insertCnt = dao.addRound(vo);
 	            
 	            model.addAttribute("insertCnt", insertCnt);
@@ -475,6 +484,7 @@ public class CLServiceImpl implements CLService{
 		
 	}
 
+	//온라인 전체 공지사항
 	@Override
 	public void getNoticeList(HttpServletRequest req, Model model) {
 		// TODO Auto-generated method stub
@@ -490,8 +500,9 @@ public class CLServiceImpl implements CLService{
 		int startPage = 0; // 시작 페이지
 		int endPage = 0;
 		
+		//전체글 갯수
 		cnt = dao.getNoticeCnt();
-		System.out.println("cnt : " + cnt); // 먼저 테이블에 30건을 insert할것
+		System.out.println("cnt : " + cnt); 
 		pageNum = req.getParameter("pageNum");
 		System.out.println("pageNum : " + pageNum);
 		if (pageNum == null) {
@@ -630,10 +641,8 @@ public class CLServiceImpl implements CLService{
 		Map<Integer,Object> watchTime = new HashMap<>();
 		if (cnt > 0) {
 			// 게시글 목록 조회
-			
-			
 			map.put("start", start);
-			map.put("end", end);			
+			map.put("end", end);
 			
 			//수업목록을 담는다
 			dtos = dao.getRoundList(map);
@@ -685,7 +694,7 @@ public class CLServiceImpl implements CLService{
 	}
 
 
-
+	//온라인 출석
 	@Override
 	public void updateCyAttendance(HttpServletRequest req, Model model) {
 		// TODO Auto-generated method stub

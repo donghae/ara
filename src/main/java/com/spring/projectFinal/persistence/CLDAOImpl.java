@@ -120,7 +120,7 @@ public class CLDAOImpl implements CLDAO{
 		return dao.getNotice(cy_n_no);
 	}
 
-
+	//온라인강의 수업갯수 가져오기
 	@Override
 	public int getRoundCnt(Map<String, Object> map) {
 		CLDAO dao = sqlSession.getMapper(CLDAO.class);
@@ -128,7 +128,7 @@ public class CLDAOImpl implements CLDAO{
 		return dao.getRoundCnt(map);
 	}
 
-
+	//온라인강의 수업 가져오기
 	@Override
 	public ArrayList<RoundVO> getRoundList(Map<String, Object> map) {
 		CLDAO dao = sqlSession.getMapper(CLDAO.class);
@@ -136,7 +136,7 @@ public class CLDAOImpl implements CLDAO{
 		return dao.getRoundList(map);
 	}
 
-
+	//수업 추가
 	@Override
 	public int addRound(RoundVO vo) {
 		// TODO Auto-generated method stub
@@ -144,28 +144,28 @@ public class CLDAOImpl implements CLDAO{
 		return dao.addRound(vo);
 	}
 
-
+	//해당 수업을 들은적 있는지 체크
 	@Override
 	public int checkCyAttendance(CyberAttendanceVO vo) {
 		CLDAO dao = sqlSession.getMapper(CLDAO.class);
 		return dao.checkCyAttendance(vo);
 	}
 
-
+	//출석정보 입력
 	@Override
 	public int insertCyAttendance(CyberAttendanceVO vo) {
 		CLDAO dao = sqlSession.getMapper(CLDAO.class);
 		return dao.insertCyAttendance(vo);
 	}
 
-
+	//출석정보 변경
 	@Override
 	public int updateCyAttendance(CyberAttendanceVO vo) {
 		CLDAO dao = sqlSession.getMapper(CLDAO.class);
 		return dao.updateCyAttendance(vo);
 	}
 
-
+	//출석정보 가져옴
 	@Override
 	public CyberAttendanceVO getCyAttendance(Map<String, Object> map) {
 		CLDAO dao = sqlSession.getMapper(CLDAO.class);
