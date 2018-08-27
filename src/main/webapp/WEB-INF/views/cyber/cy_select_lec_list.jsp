@@ -129,26 +129,27 @@ $(function() {
 									</c:if> <c:if test="${vo.file_len < 60}">
 										${vo.file_len}초
 									</c:if></td>
-												<td align="center"><input type="hidden"
-													id="totalTime_${vo.round_no}" value="${watchTime[round]}">
+												<td align="center"><input type="hidden" id="totalTime_${vo.round_no}" value="${watchTime[round]}">
 													<c:if test="${watchTime[round] > 59}">
-														<fmt:parseNumber value="${watchTime[round]/60}"
-															integerOnly="true" />분 <fmt:parseNumber
-															value="${watchTime[round]%60}" integerOnly="true" />초
-										
-									</c:if> <c:if test="${watchTime[round] < 60}">
-														<input style="border: none; text-align: center;"
+														<fmt:parseNumber value="${watchTime[round]/60}"	integerOnly="true" />분 
+														<fmt:parseNumber value="${watchTime[round]%60}" integerOnly="true" />초
+													</c:if> 
+													<c:if test="${watchTime[round] < 60}">
+														<input class="" style="border: none; text-align: center;" 
 															type="text" id="totalTime2_${vo.round_no}"
 															value="${watchTime[round]}" readonly="readonly">초
-									</c:if></td>
-												<td align="center"><c:choose>
+													</c:if>
+												</td>
+												<td align="center">
+													<c:choose>
 														<c:when test="${watchTime[round]>=(vo.file_len*0.9)}">
-											O
-										</c:when>
+															O
+														</c:when>
 														<c:otherwise>
-											X
-										</c:otherwise>
-													</c:choose></td>
+															X
+														</c:otherwise>
+													</c:choose>
+												</td>
 												<c:if test="${fn:substring(sessionScope.id,0,1) == 2 }">
 													<td align="center"><input class="video_popup"
 														type="button" value="시청하기"

@@ -129,6 +129,7 @@
 		
 		var date = new Date();
 		
+		//기존에 있던 시간을 가져옴
 		date.setFullYear(startYear);
 		date.setMonth(startMonth);
 		date.setDate(startDate);
@@ -136,34 +137,22 @@
 		date.setMinutes(startMinutes);
 		date.setSeconds(startSeconds);
 		
+		//현재시간을 가져온다
 		var endDate = new Date();
 				
+		//현재시간에서 기존시간을 뺀다(시간차이 구함)
 		var timeGap = new Date(0, 0, 0, 0, 0, 0, endDate - date);
 
-		var time = endDate.getFullYear()+"/"+
-					(endDate.getMonth() + 1)+"/"+
-					endDate.getDate()+"-"+
-					timeGap.getHours()+":"+
-					timeGap.getMinutes()+":"+
-					timeGap.getSeconds();
-		endTime.innerHTML = time
-		playTime.innerHTML = timeGap.getHours();
-		/* var tt = opener.document.getElementById("totalTime").value * 1;
-		var ts = 0;
-		var tm = 0;
-		if(((tt%100)+timeGap.getSeconds())>59){
-			ts = ((tt%100)+timeGap.getSeconds())%60;
-			tm += 1;
-		}else{
-			ts = (tt%100)+timeGap.getSeconds()*1;
-		}
-		tm += parseInt(tt/100) + timeGap.getMinutes()*1;
-		opener.document.getElementById("totalTime").value = parseInt(tm*100 + ts); */
+		//부모창에 있는 값을 가져옴		
 		var tt = opener.document.getElementById("totalTime_"+round_no).value * 1;
+		
+		//시간차이를 초로 바꿈
 		var ts = (timeGap.getHours() * 3600) + (timeGap.getMinutes()*60) + timeGap.getSeconds();
 		
+		//두 값을 더함
 		var time = parseInt(ts+tt);
 		
+		//서비스로 시간을 가져간다
 		window.location = "cy_attendance?lec_no="+lec_no+"&round_no="+round_no+"&time="+time;
 		
 	}

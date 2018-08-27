@@ -624,7 +624,9 @@ public class CLServiceImpl implements CLService{
 		System.out.println("number : " + number);
 		System.out.println("pageSize : " + pageSize);
 
+		//수업목록을 담을 변수
 		ArrayList<RoundVO> dtos = null;
+		//해당 수업목록의 자신의 시청시간을 담을 변수
 		Map<Integer,Object> watchTime = new HashMap<>();
 		if (cnt > 0) {
 			// 게시글 목록 조회
@@ -632,8 +634,10 @@ public class CLServiceImpl implements CLService{
 			
 			map.put("start", start);
 			map.put("end", end);			
+			
+			//수업목록을 담는다
 			dtos = dao.getRoundList(map);
-			for(RoundVO dto : dtos) {
+			for(RoundVO dto : dtos) {	//가져온 수업목록에 해당하는 시청시간을 담아온다
 				CyberAttendanceVO vo = new CyberAttendanceVO();
 				map = new HashMap<>();
 				map.put("lec_no", dto.getLec_no());
@@ -642,6 +646,7 @@ public class CLServiceImpl implements CLService{
 				System.out.println("dto.getRound_no : " + dto.getRound_no());
 				map.put("st_no", (String)req.getSession().getAttribute("id"));
 				
+				//lec_no와 round_no, st_no을 가지고 시청시간을 담아온다
 				vo = dao.getCyAttendance(map);
 				if(vo!=null) {
 					watchTime.put(dto.getRound_no(), vo.getWatch_time());
@@ -684,28 +689,43 @@ public class CLServiceImpl implements CLService{
 	@Override
 	public void updateCyAttendance(HttpServletRequest req, Model model) {
 		// TODO Auto-generated method stub
-		int selectCnt = 0;
-		int insertCnt = 0;
-		int updateCnt = 0;
+		int selectCnt = 0;	//처음 시청인지 확인하는 변수
+		int insertCnt = 0;	//처음 시청시 값을 저장하고 결과를 받을 변수
+		int updateCnt = 0;	//반복 시청시 값을 변경하고 결과를 받을 변수
 		
+		//과목번호
 		int lec_no = Integer.parseInt(req.getParameter("lec_no"));
+		//수업 목차
 		int round_no = Integer.parseInt(req.getParameter("round_no"));
+		//시청시간
 		long watch_time = Long.parseLong(req.getParameter("time"));
+		//학생 id
 		String st_no = (String)req.getSession().getAttribute("id");
+		//현재시간(최종 변경일자)
 		Date watch_dt = new java.sql.Date(new Timestamp(System.currentTimeMillis()).getTime());
 		
+		//출석vo생성
 		CyberAttendanceVO vo = new CyberAttendanceVO();
+		
+		//과목번호
 		vo.setLec_no(lec_no);
+		//수업목차
 		vo.setRound_no(round_no);
+		//시청시간
 		vo.setWatch_time(watch_time);
+		//학생번호
 		vo.setSt_no(st_no);
+		//최종 변경일자
 		vo.setWatch_dt(watch_dt);
 		
-		selectCnt = dao.checkCyAttendance(vo);
-		if(selectCnt>0) {
+		//해당 수업을 시청한 적이 있는지 확인
+		selectCnt = dao.checkCyAttendance(vo);	
+		if(selectCnt>0) {	//시청한 적이 있다면
+			//시간 업데이트
 			updateCnt = dao.updateCyAttendance(vo);
 			model.addAttribute("updateCnt", updateCnt);
-		}else {
+		}else {	//없다면
+			//새로 추가
 			insertCnt = dao.insertCyAttendance(vo);
 			model.addAttribute("insertCnt", insertCnt);
 		}
