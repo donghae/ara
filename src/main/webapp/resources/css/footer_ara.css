@@ -1,0 +1,126 @@
+@charset "UTF-8";
+
+
+/* 전체 기본값 설정 */
+*{
+	text-decoration:none;
+	font-size:14px;
+	letter-spacing:0.1em;
+	list-style-type:none;
+	color:#001E42;
+}
+
+#div_a{
+	display:inline-block;
+	width: 20%;
+	height: 20%;
+}
+#div_b{
+	display:inline-block;
+	width: 20%;
+	height: 20%;
+}
+#div_c{
+	display:inline-block;
+	width: 20%;
+	height: 20%;
+}
+#div_d{
+	display:inline-block;
+	width: 20%;
+	height: 20%;
+}
+#div_e{
+	display:inline-block;
+	width: 20%;
+	height: 20%;
+}
+#div_f{
+	display:inline-block;
+	width: 20%;
+	height: 20%;
+}
+#div_1{
+	position:absolute;
+	margin-left: 53%;
+	margin-top:-1%;
+	width: 38%;
+	 
+}
+#div_2{
+	display:inline-block;
+	left:50%;
+	top:50%;
+}
+#div_3{
+	position:absolute;
+	margin-left:52%;
+	margin-top: -3%;
+}
+#div_0{
+	margin-left:4%;
+	/* padding-bottom: 2%; */
+	width:91%;
+}
+li{
+	list-style-type:none;
+	text-align: none;
+}
+.h0{
+	padding-left:40px;
+	color:white;
+} 
+
+#img1{
+	width:50px;
+	height: 40px;
+}
+.img2{
+	margin-left:120px;
+	width: 8%;
+}
+.img3{
+	width:20%;
+}
+.button{
+	/* position: absolute;
+	right: 0px;
+	top: 1140px;
+	left:83%; */
+	float:right;
+		
+}
+.myButton {
+	-moz-box-shadow:inset 0px 39px 0px -24px #001E42;
+	-webkit-box-shadow:inset 0px 39px 0px -24px #001E42;
+	box-shadow:inset 0px 39px 0px -24px #001E42;
+	background-color:#001E42;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border:1px solid #ffffff;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:15px;
+	padding:6px 15px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #001E42;
+	
+}
+.myButton:hover {
+	background-color:#001E42;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+a{
+	text-decoration: none;
+	color:white;
+}
+a:hover{
+	color :pink; 
+}
+
+

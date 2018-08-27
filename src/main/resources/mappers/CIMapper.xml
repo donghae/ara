@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper
+		    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		    
+		    
+<mapper namespace="com.spring.projectFinal.persistence.CIDAO">
+	<select id="getMajorCnt" resultType="int">
+		SELECT count(*) FROM TBL_MAJOR
+	</select>
+	<select id="getMajorList" parameterType="java.util.Map" resultType="com.spring.projectFinal.CIVO.MajorVO">
+		<![CDATA[
+   			SELECT * 
+   			FROM (SELECT maj_cd, prof_no, maj_office_no, maj_cnt, maj_tuition, maj_info, ROWNUM rNum 
+   			FROM (SELECT * FROM TBL_MAJOR ORDER BY maj_cd)) 
+   			WHERE rNum >= #{start} AND rNum <= #{end}
+    	]]>
+	</select>
+	<select id="getMajor" resultType="com.spring.projectFinal.CIVO.MajorVO">
+		SELECT * FROM TBL_MAJOR WHERE maj_cd=#{maj_cd}
+	</select>
+	<select id="getDate" resultType="java.sql.Date">
+		SELECT b_intoDate FROM TBL_BOOK WHERE b_no=9791196394509
+	</select>
+	<update id="modifyMajor" parameterType="com.spring.projectFinal.CIVO.MajorVO">
+		UPDATE TBL_MAJOR SET prof_no=#{prof_no}, maj_cnt=#{maj_cnt}, maj_tuition=#{maj_tuition}, maj_info=#{maj_info} WHERE maj_cd=#{maj_cd}
+	</update>
+	<insert id="addMajor" parameterType="com.spring.projectFinal.CIVO.MajorVO">
+		insert into TBL_MAJOR(maj_cd,prof_no,maj_office_no,maj_cnt,maj_tuition,maj_info)
+		values(#{maj_cd},#{prof_no},#{maj_office_no},#{maj_cnt},#{maj_tuition},#{maj_info})
+	</insert>
+	<delete id="deleteMajor">
+		delete from TBL_MAJOR where maj_cd=#{maj_cd}
+	</delete>
+</mapper>

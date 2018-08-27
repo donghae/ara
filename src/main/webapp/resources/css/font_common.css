@@ -1,0 +1,21 @@
+@charset "UTF-8";
+
+/* 청소년체 -기본 폰트 */
+@font-face {
+  font-family: 'Youth';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//cdn.jsdelivr.net/korean-webfonts/1/orgs/othrs/kywa/Youth/Youth.woff2') format('woff2'), url('//cdn.jsdelivr.net/korean-webfonts/1/orgs/othrs/kywa/Youth/Youth.woff') format('woff');
+}
+
+
+
+*{
+	font-family: 'Youth', sans-serif;
+	text-decoration:none;
+	letter-spacing:3px;	
+}
+
+body {
+	font-family: 'RixJGulim M';
+}

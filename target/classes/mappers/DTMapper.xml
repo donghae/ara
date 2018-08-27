@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+		<!DOCTYPE mapper
+		    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">	    
+		    
+<mapper namespace="com.spring.projectFinal.persistence.DTDAO">
+
+<!-- 관리자,교수,학생 로그인 -->
+<select id="getAdminInfo1" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.AdminVO">
+	SELECT * FROM TBL_ADMIN WHERE ad_no=#{id} AND ad_pwd=#{pwd}
+</select>
+
+<select id="getProfInfo1" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.ProfessorVO">
+	SELECT * FROM TBL_PROF WHERE prof_no=#{id} AND prof_pwd=#{pwd}
+</select>
+
+<select id="getStudentInfo1" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.StudentVO">
+	SELECT * FROM TBL_STUDENT WHERE st_no=#{id} AND st_pwd=#{pwd}
+</select>
+
+<!-- 관리자 로그인 -->
+<select id="dtAdminLogin" parameterType="java.util.Map" resultType="int">
+	SELECT count(*) FROM TBL_ADMIN WHERE ad_no=#{id} AND ad_pwd=#{pwd}
+</select>
+
+<!-- 관리자 기숙사 학생 수 조회 -->
+<select id="getDormStInfoCnt" resultType="int">
+	SELECT count(*) FROM TBL_DORM_STUDENT
+</select>
+
+<!-- 관리자 기숙사 학생 목록 -->
+<select id="getDormStInfoLiDormSt" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Admin_stu_selectVO">
+	 	<![CDATA[ 
+	 	SELECT ds.st_no, s.st_name, ds.dorm_room, dorm_st_dt, dorm_end_dt  
+	 	 FROM (SELECT st_no, dorm_room, dorm_st_dt, dorm_end_dt, rownum as rNum
+				FROM(
+				     SELECT * FROM TBL_DORM_STUDENT
+				     ORDER BY dorm_room ASC
+				     )        
+			   )ds JOIN TBL_STUDENT s
+		  ON ds.st_no = s.st_no
+		  JOIN TBL_DORM d
+		  ON d.dorm_room = ds.dorm_room 
+		 WHERE rNum >= #{start} AND rNum <=#{end}
+		 ORDER BY ds.dorm_room ASC
+		 ]]>
+</select>
+
+
+<!-- 관리자 기숙사 학생 등록 -->
+<insert id="addDormStInfo" parameterType="java.util.Map"> 
+	INSERT INTO TBL_DORM_STUDENT(st_no, dorm_room, dorm_st_dt, dorm_end_dt) 
+	VALUES(#{st_no},#{dorm_room},#{dorm_st_dt},#{dorm_end_dt})
+</insert>
+
+<!-- 관리자 기숙사 학생 수정 -->
+<update id="dtAdminStuUpdate" parameterType="com.spring.projectFinal.DTVO.Admin_stu_selectVO">
+	UPDATE TBL_DORM_STUDENT SET dorm_room=#{dorm_room}, dorm_st_dt=#{dorm_st_dt}, dorm_end_dt=#{dorm_end_dt}
+	WHERE st_no=#{st_no}
+</update>
+
+<!-- 관리자 공지사항 게시 건수 조회 -->
+<select id="getDormNoticeCnt" resultType="int">
+	SELECT count(*) FROM TBL_DORM_NOTICE
+</select>
+
+<!-- 관리자 공지사항 게시 목록 조회 -->
+<select id="getDormNotice" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Admin_notice_selectVO">
+	 	<![CDATA[ 
+	 	SELECT * 
+	 	 FROM (SELECT dorm_n_no, ad_no, dorm_n_title, dorm_n_content, dorm_n_dt, dorm_n_file, dorm_n_cnt, rownum as rNum
+				FROM(
+				     SELECT * FROM TBL_DORM_NOTICE
+				     ORDER BY dorm_n_no DESC, dorm_n_dt DESC
+				     )   
+			   ) 
+		 WHERE rNum >= #{start} AND rNum <=#{end}
+		 ]]>
+</select>
+
+<!-- 관리자 공지사항 제목 클릭시 조회수 1증가 -->
+<update id="getDormNoticeCntUp" parameterType="java.util.Map" >
+	UPDATE TBL_DORM_NOTICE SET dorm_n_cnt=#{dorm_n_cnt}+1 WHERE dorm_n_no=#{dorm_n_no}
+</update>
+
+<!-- 관리자 공지시항 상세페이지 1건의 목록 뿌리기여서 ArrayList는 안썼다 .. -->
+<select id="getDormNoticeDetail" resultType="com.spring.projectFinal.DTVO.Admin_notice_selectVO">
+	SELECT * FROM TBL_DORM_NOTICE WHERE dorm_n_no=#{dorm_n_no}
+</select>
+
+<!-- 관리자 공지사항 수정 값 뿌리기 select -->
+<select id="updateDormNotice" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Admin_notice_selectVO">
+	SELECT * FROM TBL_DORM_NOTICE 
+	WHERE dorm_n_no=#{dorm_n_no} AND ad_no=#{ad_no}
+</select>
+
+<!-- 관리자 공지사항 수정 update -->
+<update id="updateDormNoticeCon" parameterType="java.util.Map">
+	UPDATE TBL_DORM_NOTICE SET ad_no=#{ad_no}, dorm_n_title=#{dorm_n_title}, dorm_n_content=#{dorm_n_content}, dorm_n_dt=TO_DATE(SYSDATE,'YYYY/MM/DD')
+	WHERE dorm_n_no=#{dorm_n_no}
+</update>
+
+<!-- 관리자 공지사항 등록 insert -->
+<insert id="addDormNotice" parameterType="com.spring.projectFinal.DTVO.Admin_notice_selectVO">
+	INSERT INTO TBL_DORM_NOTICE(dorm_n_no, ad_no, dorm_n_title, dorm_n_content, dorm_n_dt, dorm_n_cnt)
+	VALUES(tbl_dorm_notice_seq.nextval,#{ad_no},#{dorm_n_title},#{dorm_n_content},TO_DATE(SYSDATE,'YYYY/MM/DD'),0)
+</insert>
+
+<!-- 관리자 벌점관리 클릭시 벌점 현황 게시판 -->
+<select id="getDormPenaltyCnt" resultType="int">
+	SELECT count(*) FROM TBL_PENALTY
+</select>
+
+<!-- 관리자 벌점현황 목록 -->
+<select id="getDormPenalty" resultType="com.spring.projectFinal.DTVO.Dt_stu_penalty_selectVO" parameterType="java.util.Map">	
+	<![CDATA[
+		SELECT p.st_no, st_name, dorm_penalty, dorm_penalty_dt, dorm_reason
+	 			FROM (SELECT st_no, dorm_penalty, dorm_penalty_dt, dorm_reason, ROWNUM rNum 
+	                   FROM (
+	                         SELECT * FROM TBL_PENALTY 
+	                         ORDER BY dorm_penalty_dt DESC
+	                         )
+	                ) p JOIN TBL_DORM_STUDENT ds 
+	 			ON p.st_no = ds.st_no
+	           JOIN TBL_STUDENT s
+	           ON s.st_no = ds.st_no
+	 			WHERE (rNum >= #{start} AND rNum <= #{end})
+	 			ORDER BY dorm_penalty_dt DESC   			
+   	]]>   	
+</select>
+
+<!-- 관리자 벌점 조회 -->
+<!-- <select id="dtAdminPenaltySel" resultType="com.spring.projectFinal.DTVO.Dt_stu_penalty_selectVO">
+	SELECT pe.st_no, st_name, dorm_room, dorm_penalty, dorm_penalty_dt, dorm_reason
+	FROM TBL_STUDENT st JOIN TBL_DORM_STUDENT ds
+	ON st.st_no = ds.st_no
+	JOIN TBL_PENALTY pe
+	ON st.st_no = pe.st_no
+	WHERE dorm_penalty_dt IS NOT NULL
+	AND dorm_penalty_dt BETWEEN to_date('20180101','YYYYMMDD') AND to_date('20181231','YYYYMMDD')	
+	ORDER BY dorm_penalty_dt DESC, dorm_room ASC
+</select> -->
+
+<!-- 관리자 벌점 등록 -->
+<insert id="addPenaltyInsert" parameterType="java.util.Map">
+	INSERT INTO TBL_PENALTY(st_no,dorm_penalty,dorm_penalty_dt,dorm_reason)
+	VALUES(#{st_no},#{dorm_penalty},#{dorm_penalty_dt},#{textarea})
+</insert>
+
+<!-- 관리자 벌점 수정 클릭 -->
+<select id="dtAdminPenaltyUp" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Dt_stu_penalty_selectVO">
+	SELECT * FROM TBL_PENALTY
+	WHERE st_no = ${st_no} AND dorm_penalty_dt = #{dorm_penalty_dt}
+</select>
+
+<!-- 관리자 벌점 수정  목록-->
+<select id="selectPenalty" resultType="com.spring.projectFinal.DTVO.Dt_stu_penalty_selectVO">
+ SELECT p.st_no, st_name, dorm_penalty, dorm_penalty_dt, dorm_reason
+	  FROM TBL_STUDENT s JOIN TBL_DORM_STUDENT ds
+	  ON s.st_no = ds.st_no
+	  JOIN TBL_PENALTY p
+	  ON ds.st_no = p.st_no
+	  WHERE dorm_penalty_dt BETWEEN to_date('20180101','YYYYMMDD') AND to_date('20181231','YYYYMMDD')
+	  ORDER BY dorm_penalty_dt DESC
+</select>
+
+<!-- 관리자 벌점 수정 이름 클릭 -->
+<update id="updatePenalty" parameterType="java.util.Map">
+	UPDATE TBL_PENALTY SET dorm_penalty=#{dorm_penalty}, dorm_penalty_dt=#{dorm_penalty_dt}, dorm_reason=#{dorm_reason}
+	WHERE st_no=#{st_no}
+</update>
+
+<!-- 관리자 외박신청 목록 갯수 -->
+<select id="getDormOvernightCnt" resultType="int">
+	SELECT count(*) FROM TBL_OVERNIGHT
+	WHERE dorm_ex_fl = 1
+</select>
+
+<!-- 관리자 외박신청 목록 dtos -->
+<select id="getDormOvernightList" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Dt_stu_overnight_selectVO">
+<![CDATA[
+	SELECT o.st_no, st_name,dorm_on_sc,dorm_ex_dt,dorm_ex_fl,dorm_reason  
+	 FROM (SELECT st_no,dorm_on_sc,dorm_ex_dt,dorm_ex_fl,dorm_reason,rownum as rNum
+	        FROM(
+	             SELECT * FROM TBL_OVERNIGHT
+	             ORDER BY dorm_ex_dt ASC
+	             )   
+	       )o JOIN TBL_DORM_STUDENT ds
+	 ON o.st_no = ds.st_no
+	 JOIN TBL_STUDENT s
+	 ON s.st_no = o.st_no      
+	 WHERE rNum >=#{start} AND rNum <=#{end}
+	 and dorm_ex_fl = 1
+	 ORDER BY dorm_ex_dt ASC
+]]>
+</select>
+
+<!-- 관리자 외박신청 승인 -->
+<update id="dtAdminOvernightIns" parameterType="java.util.Map">
+	UPDATE TBL_OVERNIGHT SET dorm_ex_fl = 2
+	WHERE st_no=#{st_no} AND dorm_ex_dt=#{dorm_ex_dt}
+</update>
+
+<!-- 관리자 외박신청 승인 목록 건수 조회 -->
+<select id="getDormOvernightSelect" resultType="int">
+	SELECT count(*) FROM TBL_OVERNIGHT
+	WHERE dorm_ex_fl = 2
+</select>
+
+<!-- 관리자 외박신청 승인 목록 가져오기 -->
+<select id="getDormOvernightSelectList" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Dt_stu_overnight_selectVO">
+<![CDATA[
+	SELECT o.st_no, st_name,dorm_on_sc,dorm_ex_dt,dorm_ex_fl,dorm_reason  
+	 FROM (SELECT st_no,dorm_on_sc,dorm_ex_dt,dorm_ex_fl,dorm_reason,rownum as rNum
+	        FROM(
+	             SELECT * FROM TBL_OVERNIGHT
+	             ORDER BY dorm_ex_dt DESC
+	             )   
+	       )o JOIN TBL_DORM_STUDENT ds
+	 ON o.st_no = ds.st_no
+	 JOIN TBL_STUDENT s
+	 ON s.st_no = o.st_no      
+	 WHERE rNum >=#{start} AND rNum <=#{end}
+	 AND dorm_ex_fl = 2
+	 ORDER BY dorm_ex_dt DESC
+]]>	 
+</select>
+
+
+
+
+
+
+
+<!-- ara 동아리 수 조회 -->
+<select id="getCircleListCnt" resultType="int">
+	SELECT count(*) FROM TBL_CIRCLE
+</select>
+
+<!-- ara 동아리 목록  조회-->
+<select id="getCircleList" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.AraCircleVO">
+<![CDATA[
+	SELECT * 
+	 FROM (SELECT cc_name,prof_no,cc_loc,cc_category,cc_content, rownum as rNum
+	        FROM(
+	             SELECT * FROM TBL_CIRCLE
+	             ORDER BY cc_category ASC
+	             )   
+	       ) 
+	 WHERE rNum >=#{start} AND rNum <=#{end}
+	 ORDER BY cc_category DESC
+]]>
+</select> 
+
+<!-- ara 관리자 동아리 등록 -->
+<!-- <insert id="" parameterType="java.util.Map">
+	INSERT INTO TBL_CIRCLE(cc_name,prof_no,cc_loc,cc_category,cc_content)
+	VALUES(#{},#{],#{],#[],#[])
+</insert> -->
+
+<!-- ara 관리자 동아리 수정 클릭  -->
+<select id="araCircleBefore" resultType="com.spring.projectFinal.DTVO.AraCircleVO">
+	SELECT * FROM TBL_CIRCLE
+	WHERE cc_name=#{cc_name,jdbcType=VARCHAR}
+</select>
+
+<!-- ara 관리자 동아리 수정 -->
+<!-- <update id="araCircleAfter" parameterType="java.util.Map">
+	UPDATE TBL_CIRCLE SET cc_name=#{cc_name,jdbcType=VARCHAR}, prof_no=#{prof_no,jdbcType=VARCHAR], cc_loc=#{cc_loc,jdbcType=VARCHAR}, cc_content=#{cc_content,jdbcType=VARCHAR}
+	WHERE cc_name=#{cc_name}
+</update> -->
+
+<!-- ara 관리자 동아리 삭제 -->
+<delete id="araCircleDelete" parameterType="String">
+	DELETE TBL_CIRCLE 
+	WHERE cc_name=#{cc_name}
+</delete>
+
+
+
+
+
+<!-- 학생 외박 조회 -->
+<select id="dtStuNightSelect" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Dt_stu_overnight_selectVO">
+<![CDATA[
+	SELECT overnight_no, o.st_no, st_name, dorm_room, dorm_on_sc,dorm_ex_dt,dorm_ex_fl,dorm_reason  
+	 FROM (SELECT overnight_no,st_no,dorm_on_sc,dorm_ex_dt,dorm_ex_fl,dorm_reason,rownum as rNum
+	        FROM(
+	             SELECT * FROM TBL_OVERNIGHT
+	             ORDER BY dorm_ex_dt DESC
+	             )   
+	       )o JOIN TBL_DORM_STUDENT ds
+	 ON o.st_no = ds.st_no
+	 JOIN TBL_STUDENT s
+	 ON s.st_no = o.st_no      
+	 WHERE rNum >=#{start} AND rNum <=#{end}
+	 AND dorm_ex_fl IN (1,2)
+	 ORDER BY dorm_ex_dt DESC
+]]>
+</select>
+
+
+
+
+
+<!-- 학생 외박 신청 -->
+<insert id="dtStuNightInsert" parameterType="java.util.Map" >
+	INSERT INTO TBL_OVERNIGHT (overnight_no,st_no,dorm_on_sc,dorm_ex_dt,dorm_ex_fl,dorm_reason)
+	VALUES(tbl_overnight_seq.nextval,#{st_no},1,#{dorm_ex_dt},1,#{textarea})
+</insert>
+
+<!-- 외박 신청 현황 조회 -->
+<select id="dtStuOvernightCnt" resultType="int">
+	SELECT count(*) FROM TBL_OVERNIGHT
+	WHERE st_no=#{st_no}
+</select>
+
+
+<!-- 학생 외박 수정 목록 뿌리기  -->
+<select id="dtStuNightupd" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Dt_stu_overnight_selectVO">
+	SELECT overnight_no, o.st_no, st_name, dorm_room, dorm_on_sc, dorm_ex_dt, dorm_reason
+	FROM TBL_STUDENT s JOIN TBL_DORM_STUDENT ds
+	ON s.st_no = ds.st_no
+	JOIN TBL_OVERNIGHT o
+	ON o.st_no = s.st_no
+	WHERE o.st_no=#{st_no} AND overnight_no = #{overnight_no}
+</select>
+
+<!-- 학생 외박 수정 정보 뿌리기 -->
+<select id="dtStuNightUpdate" resultType="com.spring.projectFinal.DTVO.Dt_stu_overnight_selectVO">
+	SELECT ov.st_no,ds.dorm_room,ov.dorm_ex_dt,ov.dorm_reason 
+	FROM TBL_OVERNIGHT ov JOIN TBL_DORM_STUDENT ds
+	ON ov.st_no = ds.st_no
+	WHERE ov.st_no=#{st_no}
+	AND dorm_ex_fl=1
+</select>
+
+<!-- 학생 외박 정보 수정 처리 -->
+<update id="dtStuNightrevision" parameterType="java.util.Map">
+	UPDATE TBL_OVERNIGHT SET dorm_ex_dt=#{dorm_ex_dt},dorm_reason=#{dorm_reason} 
+	WHERE st_no=#{st_no} AND overnight_no=#{overnight_no}
+</update>
+
+<!-- 학생 외박 신청 삭제 pwd -->
+<select id="dtStuNightDeletePwd" resultType="com.spring.projectFinal.DTVO.Dt_stu_overnight_selectVO">
+	SELECT st.st_no, st.st_name, dt.dorm_room,dorm_on_sc, dorm_ex_dt, dorm_ex_fl, dorm_reason
+	FROM TBL_OVERNIGHT ov JOIN TBL_DORM_STUDENT dt
+	ON ov.st_no = dt.st_no
+	JOIN TBL_STUDENT st
+	ON st.st_no = dt.st_no
+	WHERE ov.st_no = #{st_no}
+	AND dorm_ex_fl = 1
+	ORDER BY dorm_ex_dt DESC
+</select>
+
+<!-- 학생 공지사항 상세조회 -->
+<select id="dtStuNoticeSelect" resultType="com.spring.projectFinal.DTVO.Admin_notice_selectVO"> 
+	SELECT * FROM TBL_DORM_NOTICE 
+	WHERE dorm_n_no = #{dorm_n_no}
+</select>
+
+<!-- 학생 외박 신청 삭제 처리 update dorm_ex_fl > 3으로 바뀐다. -->
+<delete id="dtStuNightDeletelist" parameterType="java.util.Map">
+	DELETE TBL_OVERNIGHT
+	WHERE st_no=#{st_no} AND overnight_no=#{overnight_no}
+</delete>
+
+<!-- 학생 벌점조회 글 수 조회 -->
+<select id="dtStuPenaltyCnt" resultType="int">
+	SELECT count(*) FROM TBL_PENALTY
+	WHERE st_no=#{st_no}
+</select>
+
+<!-- 해당 학생 벌점 목록 뿌리기 -->
+<select id="dtStuPenalty" parameterType="java.util.Map" resultType="com.spring.projectFinal.DTVO.Dt_stu_penalty_selectVO">
+	<![CDATA[
+		SELECT p.st_no, st_name, dorm_penalty, dorm_penalty_dt, dorm_reason
+	 			FROM (SELECT st_no, dorm_penalty, dorm_penalty_dt, dorm_reason, ROWNUM rNum 
+	                   FROM (
+	                         SELECT * FROM TBL_PENALTY 
+	                         ORDER BY dorm_penalty_dt DESC
+	                         )
+	                ) p JOIN TBL_DORM_STUDENT ds 
+	 			ON p.st_no = ds.st_no
+	           JOIN TBL_STUDENT s
+	           ON s.st_no = ds.st_no
+	 			WHERE (rNum >= #{start} AND rNum <= #{end})
+	 			ORDER BY dorm_penalty_dt DESC   			
+   	]]>
+</select>
+
+
+
+
+
+<!-- 해당 학생 기숙사 정보 조회 -->
+<select id="dtStuSelect" resultType="com.spring.projectFinal.DTVO.Admin_stu_selectVO">
+	SELECT s.st_no, st_name, dorm_room, dorm_st_dt, dorm_end_dt
+	FROM TBL_STUDENT s JOIN TBL_DORM_STUDENT ds
+	ON s.st_no = ds.st_no
+	WHERE s.st_no=#{st_no}  
+</select>
+
+
+
+
+
+
+
+
+</mapper>

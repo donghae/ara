@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 교수 -->
+<mapper namespace="com.spring.projectFinal.persistence.SM2DAO">
+
+	<!-- 희현 -->
+	<!-- 총점 개수 -->
+	<select id="totalCnt" resultType="int" parameterType="String">
+		select
+		count(*)
+		from(select gpa_total
+		from tbl_gpa_total
+		where st_no=#{st_no}
+		and gpa_semester='2018-1')
+	</select>
+
+	<!-- 평균 구하기 -->
+	<select id="total" resultType="float">
+		select
+		round(sum(gpa)/count(gpa),2) from tbl_gpa where st_no=#{st_no}
+	</select>
+	<!-- 총점 입력 처리 -->
+	<insert id="insertTotal"
+		parameterType="com.spring.projectFinal.SMVO.Gpa_Total_VO">
+		insert into tbl_gpa_total(st_no, gpa_semester,
+		gpa_total)
+		values(#{st_no}, '2018-1', #{gpa_total})
+	</insert>
+
+	<!-- 총점 업데이트 -->
+	<update id="updateTotal"
+		parameterType="com.spring.projectFinal.SMVO.Gpa_Total_VO">
+		update tbl_gpa_total
+		set gpa_total=#{gpa_total}
+		where
+		st_no=#{st_no}
+	</update>
+
+
+
+	<!-- 아름 -->
+
+	<!-- 강의 시간표 -->
+	<select id="proLecList"
+		resultType="com.spring.projectFinal.SMVO.Lec_Reg_Prof_VO"
+		parameterType="java.util.Map">
+		select l.lec_name, l.lec_room_no, l.lec_dt, l.lec_point
+		from tbl_lecture l join tbl_reg_lecture r on l.lec_no= r.lec_no
+		join tbl_prof p on p.prof_no=l.prof_no
+		<where>
+			<if test="d==0">l.lec_day_dt='월' and p.prof_no=#{prof_no}</if>
+			<if test="d==1">l.lec_day_dt='화' and p.prof_no=#{prof_no}</if>
+			<if test="d==2">l.lec_day_dt='수' and p.prof_no=#{prof_no}</if>
+			<if test="d==3">l.lec_day_dt='목' and p.prof_no=#{prof_no}</if>
+			<if test="d==4">l.lec_day_dt='금' and p.prof_no=#{prof_no}</if>
+		</where>
+	</select>
+
+	<!-- 내 강의실 - 해당 강의를 듣는 학생 수 -->
+	<select id="proStuCnt" resultType="int" parameterType="String">
+		select count(*)
+		from(select s.st_no, s.st_name, s.maj_cd
+		from tbl_student s, tbl_reg_lecture r, tbl_lecture l
+		where s.st_no=r.st_no
+		and r.lec_no = l.lec_no
+		and l.lec_name=#{lec_name})
+	</select>
+
+	<!-- 내 강의실 - 해당 강의를 듣는 학생 목록 --><!-- NVL2(g.gpa, g.gpa,0) -->
+	<select id="proStuList" parameterType="String"
+		resultType="com.spring.projectFinal.SMVO.Gpa_Lec_Stu_VO">
+	   select distinct s.st_no, s.maj_cd, s.st_name, g.gpa, l.lec_no
+	      from tbl_student s, tbl_gpa g, tbl_lecture l, tbl_reg_lecture r
+	      where s.st_no = g.st_no
+	      and l.lec_no = g.lec_no
+	      and r.lec_no = g.lec_no
+	      and l.lec_name=#{lec_name}
+	      order by s.st_no
+	</select>
+
+	<!-- 내 강의실 - 해당 강의를 듣는 학생 목록 --><!-- NVL2(g.gpa, g.gpa,0) -->
+	<select id="proStuList2" parameterType="java.util.Map"
+		resultType="com.spring.projectFinal.SMVO.Gpa_Lec_Stu_VO">
+		select distinct s.st_no, s.maj_cd, s.st_name, g.gpa, l.lec_no
+		from tbl_student s, tbl_gpa g, tbl_lecture l, tbl_reg_lecture r
+		where s.st_no = g.st_no
+		and l.lec_no = g.lec_no
+		and r.lec_no = g.lec_no
+		and l.lec_name=#{lec_name}
+		and s.st_no=#{st_no}
+	</select>
+
+	<!-- 성적 개수 -->
+	<select id="gradeCnt" resultType="int" parameterType="String">
+		select count(*)
+		from(select gpa
+		from tbl_gpa
+		where st_no=#{st_no}
+		and gpa_semester='2018-1')
+	</select>
+
+	<!-- 성적 입력 처리 -->
+	<insert id="insertGrade"
+		parameterType="com.spring.projectFinal.SMVO.GpaVO">
+		insert into tbl_gpa(st_no, lec_no, gpa_semester, gpa)
+		values(#{st_no}, #{lec_no}, '2018-1', #{gpa})
+	</insert>
+
+	<!-- 학생이름 - 학생 번호로 바꾸기 -->
+	<select id="changeStu" parameterType="String"
+		resultType="String">
+		select st_no
+		from tbl_student
+		where st_name=#{st_name}
+	</select>
+
+	<!-- 성적 업데이트 -->
+	<update id="updateGrade"
+		parameterType="com.spring.projectFinal.SMVO.GpaVO">
+		update tbl_gpa
+		set gpa=#{gpa}
+		where st_no=#{st_no} and lec_no=#{lec_no}
+	</update>
+
+	<!-- 수업관리 > 내 강의실 > 강의목록 > 출결 조회 -->
+	<select id="getAttendLi" parameterType="java.util.Map"
+		resultType="com.spring.projectFinal.SMVO.Attend_Lec_VO">
+		  select a.attend_fl, a.lec_no, a.lec_dt, l.lec_room_no
+		      from tbl_attendance a, tbl_lecture l
+		      where a.lec_no=l.lec_no
+		      and a.st_no=#{st_no}
+		      and l.lec_no=#{lec_no}
+		      order by TO_DATE(a.lec_dt)
+	</select>
+	
+	<!-- 수업관리 > 내 강의실 > 강의목록 > 출결 조회 -->
+	<select id="lecStart" parameterType="int" resultType="String">
+		select distinct lec_startDate
+		from tbl_lecture l
+		where lec_no=#{lec_no}
+	</select>
+
+	<!-- 강의명 강의번호로 바꾸기 -->
+	<select id="changeLec" parameterType="String" resultType="int">
+		select lec_no
+		from tbl_lecture
+		where lec_name=#{lec_name}
+	</select>
+
+	<!-- 출결 저장 -->
+	<insert id="inputAttend"
+		parameterType="com.spring.projectFinal.SMVO.AttendVO">
+		insert into tbl_attendance(attend_no, st_no, lec_no, attend_fl, lec_dt)
+		values(attend_no_seq.nextval, #{st_no}, #{lec_no}, #{attend_fl},
+		#{lec_dt})
+	</insert>
+
+	<!-- 같은 날짜의 출결 개수 -->
+	<select id="sameDateCnt" parameterType="java.util.Map"
+		resultType="int">
+		select count(*)
+		from
+		(select lec_dt
+		from tbl_attendance
+		where lec_dt=#{lec_dt}
+		and st_no=#{st_no}
+		and lec_no=#{lec_no})
+	</select>
+
+	<update id="updateAttend"
+		parameterType="com.spring.projectFinal.SMVO.AttendVO">
+		update tbl_attendance set attend_fl=#{attend_fl}
+		where st_no=#{st_no} and lec_no=#{lec_no} and lec_dt=#{lec_dt}
+	</update>
+</mapper>

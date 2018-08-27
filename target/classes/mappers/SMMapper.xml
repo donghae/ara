@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.spring.projectFinal.persistence.SMDAO">
+
+	<select id="juminChk" resultType="int" parameterType="string">
+		SELECT COUNT(*) FROM TBL_ENTRANCE WHERE ENT_REGI_NO=#{ENT_REGI_NO}
+	</select>
+
+	<insert id="applyMember"
+		parameterType="com.spring.projectFinal.SMVO.ApplicationVO">
+		insert into
+		TBL_ENTRANCE(ENT_NO,ENT_NAME,ENT_REGI_NO,ENT_HP,ENT_ZIPCODE,ENT_ADDR1,ENT_ADDR2
+		,ENT_EMAIL,ENT_DISABILITY_FL,ENT_HIGHSCHOOL,ENT_GRADE,ENT_MAJ,ENT_IMAGE,ENT_STATE)
+		values(TBL_ENTRANCE_seq.nextval,#{ent_name},#{ent_regi_no},#{ent_hp},#{ent_zipcode},#{ent_addr1},#{ent_addr2}
+		,#{ent_email},#{ent_disablity_fl},#{ent_highschool},#{ent_grade},#{ent_maj},#{ent_image},1)
+	</insert>
+
+	<!-- 지원서관리 목록 개수 조회 -->
+	<select id="getArticleCnt" resultType="int">
+		select count(*) from
+		TBL_ENTRANCE where ENT_STATE=1 AND ENT_MAJ=#{majorNum}
+	</select>
+
+	<!-- 지원관리 목록 조회 -->
+	<select id="getArticleList"
+		resultType="com.spring.projectFinal.SMVO.ApplicationVO"
+		parameterType="java.util.Map">
+<![CDATA[
+SELECT * FROM(SELECT ENT_NO,ENT_NAME,ENT_REGI_NO,ENT_HP,ENT_ZIPCODE,ENT_ADDR1,ENT_ADDR2
+	,ENT_EMAIL,ENT_DISABILITY_FL,ENT_HIGHSCHOOL,ENT_GRADE,ENT_MAJ,ENT_IMAGE,ENT_STATE, rownum rnum
+	FROM( SELECT * FROM TBL_ENTRANCE ORDER BY ENT_NO DESC))WHERE ENT_STATE=1 AND ENT_MAJ=#{majorNum}
+]]>
+	</select>
+
+	<!-- 합격자관리 목록 개수 조회 -->
+	<select id="getPassArticleCnt" resultType="int">
+		select count(*) from
+		TBL_ENTRANCE where ENT_STATE=2 AND ENT_MAJ=#{majorNum}
+	</select>
+
+	<!-- 합격자관리 목록 조회 -->
+	<select id="getPassArticleList"
+		resultType="com.spring.projectFinal.SMVO.ApplicationVO"
+		parameterType="java.util.Map">
+<![CDATA[
+SELECT * FROM(SELECT ENT_NO,ENT_NAME,ENT_REGI_NO,ENT_HP,ENT_ZIPCODE,ENT_ADDR1,ENT_ADDR2
+	,ENT_EMAIL,ENT_DISABILITY_FL,ENT_HIGHSCHOOL,ENT_GRADE,ENT_MAJ,ENT_IMAGE,ENT_STATE, rownum rnum
+	FROM( SELECT * FROM TBL_ENTRANCE ORDER BY ENT_NO DESC))WHERE ENT_STATE=2 AND ENT_MAJ=#{majorNum}
+	order by ENT_GRADE desc
+]]>
+	</select>
+
+	<!-- 예비합격자관리 목록 개수 조회 -->
+	<select id="getExtraArticleCnt" resultType="int">
+		select count(*) from
+		TBL_ENTRANCE where ENT_STATE=3 AND ENT_MAJ=#{majorNum}
+	</select>
+
+	<!-- 예비합격자관리 목록 조회 -->
+	<select id="getExtraArticleList"
+		resultType="com.spring.projectFinal.SMVO.ApplicationVO"
+		parameterType="java.util.Map">
+<![CDATA[
+    SELECT * FROM(SELECT ENT_NO,ENT_NAME,ENT_REGI_NO,ENT_HP,ENT_ZIPCODE,ENT_ADDR1,ENT_ADDR2
+	,ENT_EMAIL,ENT_DISABILITY_FL,ENT_HIGHSCHOOL,ENT_GRADE,ENT_MAJ,ENT_IMAGE,ENT_STATE, rownum rnum
+	FROM( SELECT * FROM TBL_ENTRANCE  where ENT_MAJ=#{majorNum} AND ENT_STATE=3 ORDER BY ent_grade DESC)) where rnum=1
+]]>
+	</select>
+
+	<!-- 지원자 합격 처리 -->
+	<update id="recognizePass">
+<![CDATA[
+	update TBL_ENTRANCE set ENT_STATE =2 where ENT_NO IN(
+	SELECT ENT_NO FROM(SELECT ENT_NO,ENT_GRADE,ENT_MAJ, rownum rnum
+	FROM( SELECT * FROM TBL_ENTRANCE where ENT_MAJ=#{majorNum} ORDER BY  ENT_GRADE desc,ENT_NO DESC))WHERE (rnum >= 0 AND rnum <= 3))
+	]]>
+	</update>
+	
+	<!-- 합격자 학번 제공 -->
+	<insert id="passStudent">
+<![CDATA[
+	update TBL_ENTRANCE set ENT_STATE =2 where ENT_NO IN(
+	SELECT ENT_NO FROM(SELECT ENT_NO,ENT_GRADE,ENT_MAJ, rownum rnum
+	FROM( SELECT * FROM TBL_ENTRANCE where ENT_MAJ=#{majorNum} ORDER BY  ENT_GRADE desc,ENT_NO DESC))WHERE (rnum >= 0 AND rnum <= 3))
+	]]>
+	</insert>
+	
+	<!-- 지원자 불합격 처리 -->
+	<update id="recognizeFail">
+	<![CDATA[
+	update TBL_ENTRANCE set ENT_STATE =3 where ENT_NO IN(
+	SELECT ENT_NO FROM(SELECT ENT_NO,ENT_GRADE,ENT_MAJ, rownum rnum
+	FROM( SELECT * FROM TBL_ENTRANCE where ENT_MAJ=#{majorNum} ORDER BY  ENT_GRADE desc,ENT_NO DESC))WHERE rnum>3) 
+	]]>
+	</update>
+
+	<!-- 추가 합격 처리 -->
+	<update id="extraRecognizePass">
+	<![CDATA[
+	update TBL_ENTRANCE set ENT_STATE =2 where ENT_NO IN(
+	SELECT ENT_NO FROM(SELECT ENT_NO,ENT_GRADE,ENT_MAJ, rownum rnum
+	FROM( SELECT * FROM TBL_ENTRANCE where ENT_MAJ=#{majorNum} AND ENT_STATE=3 ORDER BY  ENT_GRADE desc,ENT_NO DESC))WHERE rnum=1)
+	]]>
+	</update>
+
+
+	<!-- 강의 목록 개수 구하기 -->
+	<select id="getLectureCnt" resultType="int"
+		parameterType="java.util.Map">
+		select count(*) from TBL_LECTURE
+		<where>
+			<if test="lec_day_dt!=null"> lec_day_dt like #{lec_day_dt}</if>
+			<if test="lec_name!=null"> and lec_name like '%'||#{lec_name}||'%'</if>
+		</where>
+	</select>
+
+	<!-- 강의 목록 조회 -->
+	<select id="getLectureList"
+		resultType="com.spring.projectFinal.SMVO.Lec_Prof_VO"
+		parameterType="java.util.Map">
+		select * from(select lec_no, prof_name, lec_name, lec_room_no,
+		lec_day_dt,
+		lec_dt, lec_point, lec_cy_fl, max_person, limit_cnt, rownum
+		rnum
+		from( select * from TBL_LECTURE l join TBL_PROF p On
+		l.prof_no=p.prof_no
+		<where>
+			<if test="lec_day_dt!=null"> lec_day_dt like #{lec_day_dt}</if>
+			<if test="lec_name!=null"> and lec_name like '%'||#{lec_name}||'%'</if>
+		</where>
+		order by lec_no desc))
+	</select>
+
+ <!-- 강의 추가 -->
+   <insert id="lecturePlus"
+      parameterType="com.spring.projectFinal.SMVO.LectureVO">
+      insert into
+      TBL_LECTURE(lec_no,lec_name,lec_point,prof_no,lec_dt,lec_day_dt,lec_room_no,lec_cy_fl,max_person,limit_cnt)
+      values(TBL_LECTURE_SEQ.nextval,#{lec_name},#{lec_point},#{prof_no},#{lec_dt},#{lec_day_dt},#{lec_room_no}
+      ,#{lec_cy_fl},#{max_person},50)
+   </insert>
+
+
+	<!-- 수강신청 중복확인 -->
+	<select id="lecChk"	resultType="int">
+		select count(*) from tbl_lecture
+	</select>
+
+	<!-- 검색된 교수 수 구하기 -->
+	<select id="getProfCnt" resultType="int"
+		parameterType="java.util.Map">
+		select count(*) from TBL_PROF
+		<where>
+			<if test="maj_cd!=null"> maj_cd like #{maj_cd}</if>
+			<if test="prof_name!=null"> and prof_name like '%'||#{prof_name}||'%'</if>
+		</where>
+	</select>
+
+	<!-- 검색된 교수 목록 조회 -->
+	<select id="getProfList"
+		resultType="com.spring.projectFinal.SMVO.ProfessorVO"
+		parameterType="java.util.Map">
+		select * from(select prof_no, maj_cd, prof_name, rownum rnum
+		from(
+		select * from TBL_PROF
+		<where>
+			<if test="maj_cd!=null"> maj_cd like #{maj_cd}</if>
+			<if test="prof_name!=null"> and prof_name like '%'||#{prof_name}||'%'</if>
+		</where>
+		order by prof_no desc))
+	</select>
+
+	<!-- 강의 수정페이지 -->
+	<select id="LectureModi"
+		resultType="com.spring.projectFinal.SMVO.Lec_Prof_VO">
+		select lec_no, prof_name, lec_name, lec_room_no,
+		lec_day_dt,p.prof_no,
+		lec_dt, lec_point, lec_cy_fl, max_person,
+		limit_cnt
+		from TBL_LECTURE l join TBL_PROF p On l.prof_no=p.prof_no
+		where lec_no=#{lec_no}
+	</select>
+	
+	<!-- 강의 수정 처리버튼 -->
+	<update id="lectureModiPro"
+		parameterType="com.spring.projectFinal.SMVO.LectureVO">
+		update tbl_lecture set
+		lec_name=#{lec_name},lec_point=#{lec_point},prof_no=#{prof_no},
+		lec_dt=#{lec_dt},lec_day_dt=#{lec_day_dt},lec_room_no=#{lec_room_no},
+		lec_cy_fl=#{lec_cy_fl},max_person=#{max_person}
+		where lec_no=#{lec_no}
+	</update>
+   
+	<!-- 강의 삭제 처리 -->
+	<delete id="lectureDel" parameterType="int">
+		delete tbl_lecture where
+		lec_no=#{lec_no}
+	</delete>
+	
+	<!-- 수강 신청 시작 -->
+	<update id ="regStart">
+		update tbl_reg set state=1
+	</update>
+	
+	<!-- 수강 신청 종료 -->
+	<update id ="regEnd">
+		update tbl_reg set state=0
+	</update>
+	
+	<!--  상태 조회 -->
+	<select id ="regfl" resultType="int">
+		select state from tbl_reg
+	</select>
+	
+	<!--수강 신청 계획서 개수 구하기 -->
+	<select id="cartCnt" resultType="int" >
+		select count(*) from tbl_lecture_wish where st_no=#{id}
+	</select>
+	
+	<!-- 수강 신청 계획서 조회 -->
+	<select id="cartList"
+		resultType="com.spring.projectFinal.SMVO.Lecture_Wish_VO"
+		parameterType = "String">
+		select w.lec_wish_no, w.st_no, w.lec_no, p.prof_name, l.lec_point , l.lec_day_dt,l.lec_room_no, l.lec_dt, w.lec_wish_person,
+		 l.lec_cy_fl,l.max_person,l.limit_cnt, l.lec_name
+		from tbl_lecture_wish w join tbl_lecture l on w.lec_no=l.lec_no join tbl_prof p on l.prof_no=p.prof_no
+		where w.st_no=#{id} order by lec_wish_no desc
+	</select>
+	
+	<!--수강 신청 계획서 현재인원 업데이트 -->
+	<update id="cartUpdate" >
+		update tbl_lecture_wish set lec_wish_person=(select count(*) from tbl_lecture_wish where lec_no=#{lec_no}) where lec_no=#{lec_no}
+	</update>
+	
+	<!--수강 신청 계획서 추가 -->
+	<insert id="cartPlus" parameterType="java.util.Map">
+		insert into tbl_lecture_wish(lec_wish_no,st_no,lec_no,lec_wish_person) 
+			values(TBL_LECTURE_WISH_SEQ.nextval,#{id},#{lec_no},
+			(select count(*) from tbl_lecture_wish where lec_no=#{lec_no})+1)
+	</insert>
+	
+	<!--수강 신청 계획서 삭제 -->
+	<delete id="cartDel" parameterType="java.util.Map">	
+		delete tbl_lecture_wish where lec_no=#{lec_no} and st_no=#{id}
+	</delete>
+	
+	<!--수강 신청 계획서 중복확인 -->
+	<select id="cartChk" resultType="int" parameterType="java.util.Map">
+		select count(*) from tbl_lecture_wish where lec_no=#{lec_no} and st_no=#{id}
+	</select>
+	
+	
+	<!--수강 신청 개수 구하기 -->
+	<select id="regCnt" resultType="int" parameterType="String">
+		select count(*) from tbl_reg_lecture where st_no=#{id}
+	</select>
+	
+	<!-- 수강 신청 조회 -->
+	<select id="regList" parameterType="String"
+		resultType="com.spring.projectFinal.SMVO.Lecture_Wish_VO">
+		select w.reg_lec_no, w.st_no, w.lec_no, p.prof_name, l.lec_point , l.lec_day_dt,l.lec_room_no, l.lec_dt, w.lec_now_person,
+		 l.lec_cy_fl,l.max_person,l.limit_cnt, l.lec_name
+		from tbl_reg_lecture w join tbl_lecture l on w.lec_no=l.lec_no join tbl_prof p on l.prof_no=p.prof_no
+		where w.st_no=#{id} order by reg_lec_no desc
+	</select>
+	
+	<!--수강 신청 현재인원 업데이트 -->
+	<update id="regUpdate" >
+		update tbl_reg_lecture set lec_now_person=(select count(*) from tbl_reg_lecture where lec_no=#{lec_no}) where lec_no=#{lec_no}
+	</update>
+	
+	<!--수강 신청 추가 -->
+	<insert id="regPlus" >
+		insert into tbl_reg_lecture(reg_lec_no,lec_no,st_no,lec_now_person) 
+			values(TBL_REG_LECTURE_SEQ.nextval,#{lec_no},#{id},
+			(select count(*) from tbl_reg_lecture where lec_no=#{lec_no})+1)
+	</insert>
+	
+	<!--수강 신청시 성적 초기화 -->
+	<insert id="gpaPlus" >
+		insert into tbl_gpa values(#{id},#{lec_no},'2018-1',0)
+	</insert>
+	
+	<!--수강 신청 삭제시 성적 삭제 -->
+	<delete id="gpaDel" >	
+		delete tbl_gpa where lec_no=#{lec_no} and st_no=#{id}
+	</delete>
+	
+	<!--수강 신청 추가 - 현재인원 초과 체크 -->
+ 	<select id="personChk" parameterType="java.util.Map" resultType="com.spring.projectFinal.SMVO.Reg_Lec_LectureVO">
+		select distinct max_person,lec_now_person from tbl_lecture l join tbl_reg_lecture r on l.lec_no = r.lec_no
+			where l.lec_no=#{lec_no}
+	</select>
+
+	
+	<!--수강 신청 삭제 -->
+	<delete id="regDel" >	
+		delete tbl_reg_lecture where lec_no=#{lec_no} and st_no=#{id}
+	</delete>
+	
+	<!--수강 신청 계획서 중복확인 -->
+	<select id="regChk" parameterType="java.util.Map" resultType="int" >
+		select count(*) from tbl_reg_lecture where lec_no=#{lec_no} and st_no=#{id}
+	</select>
+	
+	<!-- 수강계획 도우미 - 시간표 -->
+	<select id="getCartInfo"
+		resultType="com.spring.projectFinal.SMVO.LectureVO"
+		parameterType="java.util.Map">
+		select lec_room_no,lec_dt,lec_point,lec_name,lec_day_dt 
+		from tbl_lecture_wish w join tbl_lecture l on w.lec_no = l.lec_no
+		<where>
+			<if test="d==0">
+				lec_day_dt = '월' and st_no=#{id}
+			</if>
+			<if test="d==1">
+				lec_day_dt = '화'and st_no=#{id}
+			</if>
+			<if test="d==2">
+				lec_day_dt = '수'and st_no=#{id}
+			</if>
+			<if test="d==3">
+				lec_day_dt = '목'and st_no=#{id}
+			</if>
+			<if test="d==4">
+				lec_day_dt = '금'and st_no=#{id}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 수강신청 - 시간표 -->
+	<select id="getRegInfo"
+		resultType="com.spring.projectFinal.SMVO.LectureVO"
+		parameterType="java.util.Map">
+		select lec_room_no,lec_dt,lec_point,lec_name,lec_day_dt from tbl_reg_lecture r join tbl_lecture l on r.lec_no = l.lec_no
+		<where>
+			<if test="d==0">
+				lec_day_dt = '월'and st_no=#{id}
+			</if>
+			<if test="d==1">
+				lec_day_dt = '화'and st_no=#{id}
+			</if>
+			<if test="d==2">
+				lec_day_dt = '수'and st_no=#{id}
+			</if>
+			<if test="d==3">
+				lec_day_dt = '목'and st_no=#{id}
+			</if>
+			<if test="d==4">
+				lec_day_dt = '금'and st_no=#{id}
+			</if>
+		</where>
+	</select>
+	
+	<select id="tuition" resultType="int">
+		select maj_tuition from tbl_major m join tbl_student s on m.MAJ_CD = s.maj_cd where st_no=#{id}
+	</select>
+	
+	<!-- 장학관리 > 장학금 수여 내역 조회 - 성적 개수 -->
+	<select id="getGpaCnt" resultType="int">
+		SELECT count(*)
+		FROM tbl_gpa_total where st_no =#{id}
+	</select>
+	
+	<!-- 장학관리 > 장학금 수여 내역 조회 - 성적 개수 -->
+	<select id="getGpaCntThis" resultType="int">
+		SELECT count(*)
+		FROM tbl_gpa_total where st_no =#{id} and gpa_semester='2018-1'
+	</select>
+	
+	<!-- 장학관리 > 장학금 수여 내역 조회 - 성적 목록 -->
+	<select id="getGpaList" resultType="com.spring.projectFinal.SMVO.Gpa_Total_VO">
+			select st_no,gpa_semester,gpa_total,rnum from(
+				select st_no,gpa_semester,gpa_total,rownum rnum from(
+				select st_no,gpa_semester,gpa_total from tbl_gpa_total order by gpa_total desc)) 
+				where st_no=#{id}
+	</select>
+	
+	<!-- 장학관리 > 장학금 수여 내역 조회 - 성적 목록 -->
+	<select id="getTotal" resultType="int">
+			select count(*) from tbl_student
+	</select>
+	
+	<!-- 장학관리 > 금년 순위 구하기 -->
+	<select id="getRank" resultType="int" parameterType="String">
+			select rnum from(
+				select st_no,gpa_semester,gpa_total,rownum rnum from(
+				select st_no,gpa_semester,gpa_total from tbl_gpa_total order by gpa_total desc))
+				where st_no=#{id} and gpa_semester='2018-1'
+	</select>
+	
+	<!-- 합격관리 - 합격자 - 학번제공 -->
+	<select id="provideSt_no" resultType="com.spring.projectFinal.SMVO.ApplicationVO">
+		select * from TBL_ENTRANCE where ent_no=#{ent_no}
+	</select>
+	
+	<!-- 합격관리 - 합격자 - 학번제공 -->
+	<insert id="provide" parameterType="com.spring.projectFinal.SMVO.ApplicationVO">
+		insert into TBL_STUDENT(st_no,st_pwd,st_name,st_hp,st_zipcode,st_addr1,st_addr2,st_email,st_disable_fl,maj_cd,st_img,st_regi_no,st_ent_dt)
+ 		values(218000000+(#{dto.ent_maj}*1000)+TBL_STUDENT_STNO_SEQ.nextval,218000000+(#{dto.ent_maj}*1000)+TBL_STUDENT_STNO_SEQ.currval,#{dto.ent_name},#{dto.ent_hp},#{dto.ent_zipcode},#{dto.ent_addr1},#{dto.ent_addr2},#{dto.ent_email},#{dto.ent_disablity_fl},#{dto.ent_maj},#{dto.ent_image},#{dto.ent_regi_no},sysdate)
+ 	</insert>
+		
+	<!-- 합격한 사람 업데이트 - 합격상태(3)-> 학번제공(4) -->
+	<update id="updateStu">
+		update TBL_ENTRANCE set ent_state=4 where ent_no=#{ent_no}
+	</update>
+	
+	<!-- 합격자 수험번호 조회 -->
+	<select id="st_no" parameterType="String" resultType="String">
+		select st_no from tbl_student where st_regi_no=#{regi_no}
+	</select>
+	
+	
+	
+
+	<!-- 아름 -->
+
+
+	   <!-- 합격자 조회 - 지원했는지 확인 -->
+   <select id="nmJuminChk" parameterType="java.util.Map"
+      resultType="int">
+      SELECT COUNT(*) FROM tbl_entrance WHERE ent_name=#{strName}
+      AND
+      ent_regi_no=#{strJumin}
+   </select>
+
+   <!-- 합격자 조회 - -->
+   <select id="entStateChk"
+      resultType="com.spring.projectFinal.SMVO.ApplicationVO">
+      SELECT ent_state, ent_name, ent_maj,ent_regi_no
+      FROM tbl_entrance 
+      WHERE
+      ent_name=#{strName} AND
+      ent_regi_no=#{strJumin}
+   </select>
+
+   <!-- 학적 관리 > 기본 학적 상세페이지 -->
+   <select id="getStudentInfo"
+      resultType="com.spring.projectFinal.SMVO.StudentVO">
+      select * FROM tbl_student
+      WHERE st_no=#{id}
+   </select>
+
+   <!-- 학적 관리 > 기본 학적 상세페이지 - 정보 수정 처리 -->
+   <update id="updateStInfo"
+      parameterType="com.spring.projectFinal.SMVO.StudentVO">
+      UPDATE tbl_student SET st_email=#{st_email},
+      st_hp=#{st_hp},
+      st_zipcode=#{st_zipcode}, st_addr1=#{st_addr1},
+      st_addr2=#{st_addr2},
+      st_bk=#{st_bk}, st_bkno=#{st_bkno},
+      st_bk_holder=#{st_bk_holder}
+      WHERE st_no=#{st_no}
+   </update>
+
+   <!-- 수업관리 > 내 강의실 - 시간표 -->
+   <select id="getLectureInfo"
+      resultType="com.spring.projectFinal.SMVO.Stu_Reg_Lec_VO"
+      parameterType="java.util.Map">
+         select l.lec_name, l.lec_room_no, l.lec_dt, l.lec_point
+         from tbl_lecture l join tbl_reg_lecture r on l.lec_no= r.lec_no
+         join tbl_student s on r.st_no = s.st_no
+      <where>
+         <if test="d==0">l.lec_day_dt='월' and s.st_no=#{st_no}</if>
+         <if test="d==1">l.lec_day_dt='화' and s.st_no=#{st_no}</if>
+         <if test="d==2">l.lec_day_dt='수' and s.st_no=#{st_no}</if>
+         <if test="d==3">l.lec_day_dt='목' and s.st_no=#{st_no}</if>
+         <if test="d==4">l.lec_day_dt='금' and s.st_no=#{st_no}</if>
+      </where>
+   </select>
+
+   <!-- 수업관리 > 내 강의실 > 내 강의 개수 -->
+   <select id="getMyLecCnt" resultType="int">
+      SELECT COUNT(*)
+      FROM (select l.lec_no, l.lec_name, p.prof_name, l.lec_day_dt, l.lec_dt, l.lec_point
+from tbl_lecture l, tbl_prof p, tbl_reg_lecture r
+where l.prof_no= p.prof_no
+and l.lec_no= r.lec_no
+and r.st_no=#{st_no})
+   </select>
+
+
+   <!-- 수업관리 > 내 강의실 > 내 강의 목록 -->
+   <select id="getMyLecList" parameterType="java.util.Map"
+      resultType="com.spring.projectFinal.SMVO.Lec_Reg_Prof_VO">
+   select *
+   from (select l.lec_no, l.lec_name, p.prof_name, l.lec_day_dt, l.lec_dt,
+   l.lec_point, rownum rNum
+   from tbl_lecture l, tbl_prof p, tbl_reg_lecture r
+   where l.prof_no= p.prof_no
+   and l.lec_no= r.lec_no
+   and r.st_no=#{st_no}
+   order by l.lec_no)
+   </select>
+
+   <!-- 수업관리 > 내 강의실 > 강의목록 > 출결 목록 조회 -->
+   <!-- <select id="getAttendLi" resultType="com.spring.projectFinal.SMVO.Attend_Lec_VO">
+      select attend_fl, rownum
+      from tbl_attendance a, tbl_lecture l, tbl_reg_lecture r
+      where a.st_no = r.st_no
+      and a.lec_no = a.lec_no 
+      and a.st_no=#{st_no}
+      and l.lec_name=#{lec_name}
+   </select> -->
+   <select id="getAttendLi" resultType="com.spring.projectFinal.SMVO.Attend_Lec_VO">
+      select a.attend_fl, a.lec_no, a.lec_dt, l.lec_room_no
+      from tbl_attendance a, tbl_lecture l
+      where a.lec_no=l.lec_no
+      and a.st_no=#{st_no}
+      and l.lec_no=#{lec_no}
+      order by l.lec_dt
+   </select>
+   
+   <select id="attendList" resultType="com.spring.projectFinal.SMVO.Attend_Lec_VO">
+      select a.attend_fl
+      from tbl_attendance a, tbl_lecture l
+      where a.lec_no=l.lec_no
+      and a.st_no=#{st_no}
+      and l.lec_no=#{lec_no}
+      order by l.lec_dt
+   </select>
+
+   <!-- 성적관리 > 금학기 성적 개수 구하기 -->
+   <select id="getGpaThisCnt" resultType="int">
+      SELECT COUNT(*)
+      FROM
+      (select distinct g.gpa_semester, g.lec_no, g.st_no, l.LEC_NAME, g.gpa
+         from TBL_GPA g, tbl_lecture l, tbl_reg_lecture r
+         where g.lec_no = l.lec_no
+         and l.lec_no = r.lec_no
+         AND g.st_no=#{st_no}
+         AND g.gpa_semester=#{semester}
+      )
+   </select>
+
+   <!-- 성적관리 > 금학기 성적 목록 -->
+   <select id="getGpaThisList" parameterType="java.util.Map"
+      resultType="com.spring.projectFinal.SMVO.Stu_Reg_Lec_Gpa_VO">
+         select distinct g.gpa_semester, g.lec_no, g.st_no, l.LEC_NAME, g.gpa
+         from TBL_GPA g, tbl_lecture l, tbl_reg_lecture r
+         where g.lec_no = l.lec_no
+         and l.lec_no = r.lec_no
+         AND g.st_no=#{st_no}
+         AND g.gpa_semester=#{semester}
+   </select>
+
+
+   <!-- 관리자 -->
+   <!-- 관리자 > 전체 학생수 -->
+   <select id="getStudentCnt" resultType="int">
+      SELECT COUNT(*)
+      FROM (select * from tbl_student) where maj_cd=#{major}
+   </select>
+
+   <!-- 관리자 > 전체 학생 조회 -->
+   <select id="getStudentList"
+      resultType="com.spring.projectFinal.SMVO.StudentVO">
+         select * from tbl_student where maj_cd=#{major}
+   </select>
+   
+   <!-- 관리자 > 전체 성적 갯수 -->
+   <select id="getAdminGpaCnt" resultType="int">
+      SELECT COUNT(*)
+      FROM (
+      select g.gpa_semester, l.lec_name, s.st_no, s.st_name, g.gpa
+      from tbl_gpa g, tbl_lecture l, tbl_student s
+      where g.st_no=s.st_no
+      and l.lec_no=g.lec_no
+      order by gpa_semester, lec_name)
+   </select>
+
+   <!-- 관리자 > 전체 성적 조회 -->
+   <select id="getAdminGpaList"
+      resultType="com.spring.projectFinal.SMVO.Gpa_Lec_Stu_VO">
+        select g.gpa_semester, l.lec_name, s.st_no, s.st_name, g.gpa
+      from tbl_gpa g, tbl_lecture l, tbl_student s
+      where g.st_no=s.st_no
+      and l.lec_no=g.lec_no
+      order by gpa_semester desc, lec_name
+   </select> 
+
+</mapper>

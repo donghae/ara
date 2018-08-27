@@ -1,0 +1,51 @@
+
+#myara {
+    width: 100%;
+    height: 40px;
+    margin: 0 auto;
+	text-align: center;
+	background-color:#FDF8F5;
+	font-size:14px;
+}
+.common {
+    display: inline-table;    
+    height:40px;
+    position: relative;
+}
+.aranav {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;   
+}
+.menu {
+    float: left;
+}
+.logo {
+    clear: left;
+}
+.login {
+    float: right;
+}
+
+
+
+/* 헤더 -top */
+#my {	
+	width:100%;
+	height:40px;
+	margin:0px;
+	padding:0px;
+	background-color:#FDF8F5;
+	font-size:14px;
+}
+#my >p {
+	width:85%;
+	height:40px;
+	margin:0px auto 10px;
+	padding:5px 0px 0px;
+}
+#my >p> a{
+	float:right;
+	text-decoration:none;
+}
+

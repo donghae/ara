@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.spring.projectFinal.AndroidAra.AndroidDAO">
+
+	<select id="confirmIdPwd" resultType="int" parameterType="java.util.Map">
+		SELECT count(*)
+		FROM tbl_student
+		WHERE  st_no=#{st_no}
+		and st_pwd=#{st_pwd}	
+	</select>
+	
+	<select id="getMemberInfo" resultType="com.spring.projectFinal.AndroidAra.StudentVO">
+		SELECT s.st_no, m.maj_info, s.st_name, s.st_hp
+		FROM tbl_student s, TBL_MAJOR m
+		WHERE s.maj_cd=m.maj_cd and st_no=#{st_no}
+	</select>
+	<select id="getAttendList" resultType="com.spring.projectFinal.AndroidAra.AttendVO">
+		select l.lec_name, a.lec_dt, a.ATTEND_FL 
+		from TBL_ATTENDANCE a, TBL_LECTURE l 
+		where a.LEC_NO=l.LEC_NO AND a.st_no=#{id}
+		order by a.LEC_NO, a.LEC_DT
+	</select>
+	<select id="getGpaList" resultType="com.spring.projectFinal.AndroidAra.Gpa_Total_VO">
+		select * from TBL_GPA_total WHERE st_no=#{id}
+		order by GPA_SEMESTER
+	</select>
+	
+	<select id="getLectureInfo"
+      resultType="com.spring.projectFinal.AndroidAra.Stu_Reg_Lec_VO"
+      parameterType="java.util.Map">
+         select l.lec_name, l.lec_room_no, l.lec_dt, l.lec_point
+         from tbl_lecture l join tbl_reg_lecture r on l.lec_no= r.lec_no
+         join tbl_student s on r.st_no = s.st_no
+      <where>
+         <if test="d==0">l.lec_day_dt='월' and s.st_no=#{st_no}</if>
+         <if test="d==1">l.lec_day_dt='화' and s.st_no=#{st_no}</if>
+         <if test="d==2">l.lec_day_dt='수' and s.st_no=#{st_no}</if>
+         <if test="d==3">l.lec_day_dt='목' and s.st_no=#{st_no}</if>
+         <if test="d==4">l.lec_day_dt='금' and s.st_no=#{st_no}</if>
+      </where>
+   </select>
+</mapper>

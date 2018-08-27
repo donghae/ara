@@ -1,0 +1,133 @@
+body {
+	
+}
+
+a {
+	color: #000;
+}
+
+li {
+	list-style: none;
+}
+
+.panel-defaul>.panel-heading {
+	color: #fff;
+	background-color: #00436a;
+	border-color: #ddd;
+}
+
+.panel-group .panel+.panel {
+	margin-top: 0px;
+}
+
+.panel-group {
+	margin-top: 35px;
+}
+
+.panel-collapse {
+	background-color: rgba(220, 213, 172, 0.5);
+}
+
+.glyphicon {
+	margin-right: 10px;
+}
+
+ul.list-group {
+	margin: 0px;
+}
+
+ul.bulletlist li {
+	list-style: disc;
+}
+
+ul.list-group  li a {
+	display: block;
+	padding: 5px 0px 5px 15px;
+	text-decoration: none;
+	background-color: #ffffff;
+	color: #001E42;
+}
+
+ul.list-group li {
+	border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
+}
+
+ul.list-group  li a:hover, ul li a:focus {
+	color: #fff;
+	font-weight: bold;
+	background-color: #001E42;
+}
+
+.panel-title a:hover, .panel-title a:active, .panel-title a:focus,
+	.panel-title .open a:hover, .panel-title .open a:active, .panel-title .open a:focus
+	{
+	text-decoration: none;
+	color: #fff;
+}
+
+.panel-title>.small, .panel-title>.small>a, .panel-title>a, .panel-title>small,
+	.panel-title>small>a {
+	display: block;
+}
+
+@media ( min-width : 768px) {
+	.navbar-collapse.collapse {
+		display: block !important;
+		height: auto !important;
+		padding-bottom: 0;
+		overflow: visible !important;
+		padding-left: 0px;
+	}
+}
+
+@media ( min-width : 992px) {
+	.menu-hide {
+		display: none;
+	}
+}
+
+.menu-hide .panel-defaul>.panel-heading {
+	color: #fff;
+	background-color: #8e8c8c;
+	border-color: #ddd;
+}
+
+.navbar-toggle .icon-bar {
+	background-color: #fff;
+}
+
+.navbar-toggle {
+	padding: 11px 10px;
+	margin-top: 8px;
+	margin-right: 15px;
+	margin-bottom: 8px;
+	background-color: #a32638;
+	border-radius: 0px;
+}
+
+/* 사이드바 */
+.panel-heading {
+	width: 180px;
+	height: 50px;
+	text-align: center;
+	padding-top: 18px;
+}
+/* 사이드바 사이즈 */
+.panel panel-defaul {
+	width: 180px;
+}
+
+/* 사이드바 세부내용 */
+#collapseOne, #collapseTwo, #collapseThree, #collapseFour, #collapseFive,
+	#collapseSix, #collapseSeven {
+	width: 180px;
+}
+
+#sideNavbar {
+	margin-left: 200px;
+	width: 180px;
+}
+
+#sidenav1 {
+	margin-top: 70px;
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper
+		    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		    
+		    
+<mapper namespace="com.spring.projectFinal.persistence.ARADAO">
+	<select id="checkAdmin" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*) FROM TBL_ADMIN WHERE ad_no=#{id} AND ad_pwd=#{pwd}
+	</select>
+	<select id="checkProf" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*) FROM TBL_PROF WHERE prof_no=#{id} AND prof_pwd=#{pwd}
+	</select>
+	<select id="checkStudent" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*) FROM TBL_STUDENT WHERE st_no=#{id} AND st_pwd=#{pwd}
+	</select>
+	<select id="getAdminInfo" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.AdminVO">
+		SELECT * FROM TBL_ADMIN WHERE ad_no=#{id} AND ad_pwd=#{pwd}
+	</select>
+	<select id="getProfInfo" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.ProfessorVO">
+		SELECT * FROM TBL_PROF WHERE prof_no=#{id} AND prof_pwd=#{pwd}
+	</select>
+	<select id="getStudentInfo" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.StudentVO">
+		SELECT * FROM TBL_STUDENT WHERE st_no=#{id} AND st_pwd=#{pwd}
+	</select>
+	
+	<select id="getAdminIdPwd" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.AdminVO">
+		SELECT * FROM TBL_ADMIN WHERE ad_name=#{name} AND ad_birth_dt=#{birth}
+		<if test="id!=null">
+			AND ad_no=#{id}
+		</if>
+	</select>
+	<select id="getProfIdPwd" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.ProfessorVO">
+		SELECT * FROM TBL_PROF WHERE prof_name=#{name} AND prof_birth=#{birth}
+		<if test="id!=null">
+			AND prof_no=#{id}
+		</if>
+	</select>
+	<select id="getStudentIdPwd" parameterType="java.util.Map" resultType="com.spring.projectFinal.ARAVO.StudentVO">
+		SELECT * FROM TBL_STUDENT WHERE ST_NAME=#{name} AND ST_BIRTH=#{birth}
+		<if test="id!=null">
+			AND ST_no=#{id}
+		</if>
+	</select>
+</mapper>

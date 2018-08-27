@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper
+		    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		    
+		    
+<mapper namespace="com.spring.projectFinal.persistence.CLDAO">
+	<insert id="addLecNotice" parameterType="java.util.Map">
+		insert into TBL_CYBER_LEC_NOTICE(
+		cy_lec_n_no,
+		lec_no,
+		prof_no,
+		cy_lec_n_title,
+		cy_lec_n_content,
+		cy_lec_n_dt,
+		cy_lec_n_file,
+		cy_lec_n_cnt)
+	    values(
+	    CYBER_LEC_NOTICE_seq.nextval,
+	    #{vo.lec_no},
+	    #{vo.prof_no},
+	    #{vo.cy_lec_n_title},
+	    #{vo.cy_lec_n_content},
+	    #{vo.cy_lec_n_dt},
+	    #{vo.cy_lec_n_file},
+	    #{vo.cy_lec_n_cnt})
+	</insert>
+	<select id="getLecNoticeCnt" resultType="int" parameterType="java.util.Map">
+		SELECT count(*) FROM TBL_CYBER_LEC_NOTICE WHERE lec_no=#{lec_no}
+	</select>
+	<select id="getLecNoticeList" parameterType="java.util.Map" resultType="com.spring.projectFinal.CLVO.CyberLecNoticeVO">
+		<![CDATA[
+			SELECT c.cy_lec_n_no, c.lec_no, p.prof_name, c.cy_lec_n_title, c.cy_lec_n_content, c.cy_lec_n_dt, c.cy_lec_n_file, c.cy_lec_n_cnt
+   			FROM (SELECT cy_lec_n_no, lec_no, prof_no, cy_lec_n_title, cy_lec_n_content, cy_lec_n_dt, cy_lec_n_file, cy_lec_n_cnt, ROWNUM rNum 
+   			FROM (SELECT * FROM TBL_CYBER_LEC_NOTICE WHERE lec_no=#{lec_no} ORDER BY cy_lec_n_no DESC)) c, TBL_PROF p 
+   			WHERE c.prof_no=p.prof_no AND (rNum >= #{start} AND rNum <= #{end})   			
+    	]]>
+	</select>
+	<select id="getLecNotice" resultType="com.spring.projectFinal.CLVO.CyberLecNoticeVO">
+		SELECT * FROM TBL_CYBER_LEC_NOTICE WHERE cy_lec_n_no=#{cy_lec_n_no}
+	</select>
+	<select id="getLecCnt" resultType="int" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM TBL_LECTURE l, (SELECT prof_name, prof_no FROM TBL_prof) p
+		<if test="studentId != null || adminId !=null">
+		, (SELECT st_no, lec_no FROM TBL_REG_LECTURE) r 
+		</if>
+		WHERE l.lec_cy_fl=1 AND l.prof_no=p.prof_no
+		<if test="studentId != null">
+			AND r.st_no=#{studentId} AND l.lec_no=r.lec_no
+		</if>
+		<if test="profId != null">
+			AND l.prof_no=#{profId}
+		</if>
+		<if test="adminId != null">
+			AND l.lec_no=r.lec_no
+		</if>
+	</select>
+	<select id="getLecList" parameterType="java.util.Map" resultType="com.spring.projectFinal.CLVO.LectureVO" >
+		
+	
+		SELECT distinct * FROM TBL_LECTURE l, (SELECT prof_name, prof_no FROM TBL_prof) p
+		<if test="studentId != null">
+		, (SELECT st_no,lec_no FROM TBL_REG_LECTURE) r
+		</if>
+		<if test="adminId !=null">
+		, (SELECT lec_no FROM TBL_REG_LECTURE) r
+		</if>
+		WHERE l.lec_cy_fl=1 AND l.prof_no=p.prof_no
+		<if test="studentId != null">
+			AND r.st_no=#{studentId} AND l.lec_no=r.lec_no
+		</if>
+		<if test="profId != null">
+			AND l.prof_no=#{profId}
+		</if>
+		<if test="adminId != null">
+			AND l.lec_no=r.lec_no
+		</if>
+	</select>
+	<select id="getLecPersonCnt" resultType="int">
+		SELECT COUNT(*) FROM TBL_REG_LECTURE r, TBL_LECTURE l WHERE r.lec_no=l.lec_no AND l.lec_cy_fl=1 and r.lec_no=#{lec_no}
+	</select>
+	
+	<insert id="addNotice" parameterType="java.util.Map">
+		insert into TBL_CYBER_NOTICE(
+		cy_n_no,
+		ad_no,
+		cy_n_title,
+		cy_n_content,
+		cy_n_dt,
+		cy_n_file,
+		cy_n_cnt)
+	    values(
+	    CYBER_notice_seq.nextval,
+	    #{vo.ad_no},
+	    #{vo.cy_n_title},
+	    #{vo.cy_n_content},
+	    #{vo.cy_n_dt},
+	    #{vo.cy_n_file},
+	    #{vo.cy_n_cnt})
+	</insert>
+	<select id="getNoticeCnt" resultType="int">
+		SELECT count(*) FROM TBL_CYBER_NOTICE
+	</select>
+	
+	<update id="updateCnt">
+		update TBL_CYBER_NOTICE set cy_n_cnt=#{cnt} where cy_n_no=#{num}
+	</update>
+	
+	<update id="updateCnt2">
+		update TBL_CYBER_LEC_NOTICE set cy_lec_n_cnt=#{cnt} where cy_lec_n_no=#{num}
+	</update>
+	
+	<select id="getNoticeList" parameterType="java.util.Map" resultType="com.spring.projectFinal.CLVO.CyberNoticeVO">
+		<![CDATA[
+			SELECT c.cy_n_no, a.ad_name, c.cy_n_title, c.cy_n_content, c.cy_n_dt, c.cy_n_file, c.cy_n_cnt
+   			FROM (SELECT cy_n_no, ad_no, cy_n_title, cy_n_content, cy_n_dt, cy_n_file, cy_n_cnt, ROWNUM rNum 
+   			FROM (SELECT * FROM TBL_CYBER_NOTICE ORDER BY cy_n_no DESC)) c, TBL_ADMIN a 
+   			WHERE c.ad_no=a.ad_no AND (rNum >= #{start} AND rNum <= #{end})   			
+    	]]>
+	</select>
+	<select id="getNotice" resultType="com.spring.projectFinal.CLVO.CyberNoticeVO">
+		SELECT * FROM TBL_CYBER_NOTICE WHERE cy_n_no=#{cy_n_no}
+	</select>
+	<select id="getRoundCnt" resultType="int" parameterType="java.util.Map">
+		SELECT count(*) FROM TBL_CY_LECTURE WHERE lec_no=#{lec_no} ORDER BY round_no
+	</select>
+	<select id="getRoundList" resultType="com.spring.projectFinal.CLVO.RoundVO" parameterType="java.util.Map">
+		SELECT * FROM TBL_CY_LECTURE WHERE lec_no=#{lec_no}	ORDER BY round_no
+	</select>
+	
+	<insert id="addRound" parameterType="com.spring.projectFinal.CLVO.RoundVO">
+		INSERT INTO TBL_CY_LECTURE(lec_no,round_no,round_name,file_name,file_len)
+		VALUES(#{lec_no},#{round_no},#{round_name},#{file_name},#{file_len})
+	</insert>
+	<select id="checkCyAttendance" parameterType="com.spring.projectFinal.CLVO.CyberAttendanceVO" resultType="int">
+		SELECT COUNT(*) FROM TBL_CY_ATTENDANCE WHERE lec_no=#{lec_no} AND round_no=#{round_no} AND st_no=#{st_no}
+	</select>
+	<insert id="insertCyAttendance" parameterType="com.spring.projectFinal.CLVO.CyberAttendanceVO">
+		INSERT INTO TBL_CY_ATTENDANCE(lec_no, round_no, st_no, watch_time, watch_dt)
+		VALUES(#{lec_no},#{round_no},#{st_no},#{watch_time},#{watch_dt})
+	</insert>
+	<update id="updateCyAttendance" parameterType="com.spring.projectFinal.CLVO.CyberAttendanceVO">
+		UPDATE TBL_CY_ATTENDANCE SET watch_time=#{watch_time}, watch_dt=#{watch_dt} WHERE lec_no=#{lec_no} AND round_no=#{round_no} AND st_no=#{st_no}
+	</update>
+	<select id="getCyAttendance" parameterType="java.util.Map" resultType="com.spring.projectFinal.CLVO.CyberAttendanceVO">
+		SELECT * FROM TBL_CY_ATTENDANCE WHERE lec_no=#{lec_no} AND round_no=#{round_no} AND st_no=#{st_no}
+	</select>
+</mapper>

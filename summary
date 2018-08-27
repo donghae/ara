@@ -1,0 +1,278 @@
+0. dbcp(DataBase Connection Pool)설정 -> Servers > Tomcat v8.5 > context.xml 에 작성
+
+	컨넥션 풀 리소스 : context.lookup("java:comp/env/jdbc/Oracle11g")
+	대소문자 주의할것
+	username : 소문자
+	ojdbc6.jar 파일이 lib 없을 때도 컨넥션 에러 
+	name="jdbc/Oracle11g" : dbcp설정을 읽어서 컨넥션을 발급 받을 때의 식별자이므로 중복되면 안된다
+
+
+	
+	<Resource auth="Container"
+			driverClassName = "oracle.jdbc.driver.OracleDriver"
+			maxActive = "50"	
+			maxWait = "1000"
+			name = "jdbc/Oracle11g"
+			username = "jsp_l_lsh"
+			password = "tiger"
+			type = "javax.sql.DataSource"
+			url = "jdbc:oracle:thin:@localhost:1521:xe"
+		/>
+
+
+
+1. 프로젝트 생성 - new Spring Legacy Project - 프로젝트명 입력 , Spring MVC Board 선택 - 패키지명 입력
+
+	*패키지명 : 반드시 3레벨이상을 해야하며, 3번째가 컨텍스트명이 된다(컨텍스트명=패키지명)
+	예) spring.mvc.mybatis_board : http://localhost:8082/mybatis_board/
+	
+	위의 과정 거치면 아래가 자동 생성된다. (기능:해당 패키지 이하의 모든 클래스에서 자동으로 객체생성) context의 위치는 servlet-context.xml에 있으며, 
+		위치 : src > main > webapp > WEB-INF > spring > appServlet > servlet-context.xml
+		<context:component-scan base-package="spring.mvc.mybatis_board" /> 
+	
+	WEB-INF > web.xml 에서 컨텍스트가 기술된 위치를 알 수 있다
+		<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value><!-- 컨텍스트가 설정된 위치 -->
+	
+	
+	
+2. 한글 인코딩 ( src > main > webapp > WEB-INF > web.xml)
+
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+
+3. spring.mvc.mybatis_board 패기지에 controller, service, persistence, vo 패키지 생성 (패키지 우클릭 -> 폴더만들기 -> controller만 쓰면 앞의 패키지명포함되서 만들어짐)
+
+	1) 컨트롤러 소스 작성 (new > class > MemberController.java)
+	
+		@Controller
+		클래스명
+		@Autowired
+		클래스명 참조변수;             
+		@RequestMapping("url 지정")
+		메소드명 작성( 기존의 jsp에서 요청분석만 붙여넣는다)
+		
+	2) 패키지명, 경로 수정
+		
+	3) 나머지(service, persistence, vo)는 JSP_mvcMember 소스 복사해서 붙여놓는다
+		
+		(3-1)서비스 인터페이스 Model로 수정
+		예) public void confirmId(HttpServletRequest req, Model model);
+		
+		(3-2)서비스 impl 수정
+		@Service
+		클래스명
+		@Autowired || @Inject
+		클래스명 참조변수;(메소드안에서 반복되어 생성되는 객체를 자동 객체 생성)
+		각 메소드 작성() {
+			
+			req.getParameter("name속성명");
+			...	
+			model.addAttribute("키",값)
+		}              
+	
+	
+		(3-2) DAOimpl 수정
+		@Repository : 저장소
+		클래스명 public class MemberDAOImpl implements MemberDAO{
+
+		@Autowired
+		클래스명 참조변수 private SqlSession sqlSession; -> servlet-context.xml에 sqlSession 주입 후 작성할 것
+		
+		*** @Controller, @Service, @Repository 미작성 시, NoSuchBeanException 에러, 500에러 발생 *** 
+		
+		
+		(3-3) VO 수정
+		패키지 경로 수정
+		
+		
+	
+4. WEB-INF > views > member 폴더 생성 후, jsp 소스를 붙여 넣는다
+	".do" 지우기
+
+
+5. src > main > webapp > resources 에 스크립트 파일, css파일 , image폴더 를 붙여넣는다
+
+	setting.jsp 수정
+	<!-- 자바스크립트, css위치 --><!-- value="/컨텍스트명 (패키지명의 3번째 레벨명)/resources/" -->
+	<c:set var="path" value="/mybatis_board/resources/"/>
+
+	
+	
+	
+	
+===============마이바티스 설정===================
+
+
+6. pom.xml 설정
+
+	(6-1) pom.xml 기본설정 바꾸는 방법
+	
+		<properties>
+		②	<java-version> 1.6 </java-version>
+		①	<org.springframework-version> 4.3.9.RELEASE </org.springframework-version>
+			<org.aspectj-version>1.6.10</org.aspectj-version>
+			<org.slf4j-version>1.6.6</org.slf4j-version>
+		</properties>
+	
+		① 스프링 버전 바꾸기
+			주소 : (https://spring.io/projects/spring-framework   -> Learn 클릭 후 정보보기)		
+			<org.springframework-version> 바꿀 버전으로 쓰기 </org.springframework-version>
+			
+			기타정보 수정 (http://spring.io/projects	-> spring security 버전을 Learn으로 보기 )
+		② 자바 버전 바꾸기
+			(②-1)
+			프로젝트 우클릭 -> Properties -> Java Compiler -> 
+			Use compliance~ 체크해제 -> Compiler compliance level 변경 -> Apply -> 
+			pox.xml에서 <java-version> 바뀐 버전 </java-version> 으로 수정
+			
+			(②-2)
+			프로젝트 우클릭 -> Properties -> Project Facets -> Java 바뀐 버전으로 수정			
+			
+			(3) 
+			프로젝트 우클릭 -> Properties -> Java Build Path -> Libraries -> JRE System Library 더블클릭 -> Java 바꿀 버전으로 수정	
+			
+	(6-2)  pom.xml에 마이바이스 설정파일을 <!-- Test --> 위에 등록 하기
+		(mybatis-spring, spring-jdbc, mybatis, spring-test 등록)
+
+			<!-- mybatis 등록 시작 -->
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-spring</artifactId>
+				<version>1.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis</artifactId>
+				<version>3.4.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>4.3.9.RELEASE</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>4.3.9.RELEASE</version>
+			</dependency>
+			<!-- mybatis 등록 끝 -->
+		
+	
+7. Mapper 패키지 작성 : sql문을 작성할 xml파일을 만듦
+	src/main/resources  폴더에  package 작성 : mybatis_board.mapper
+
+
+8. servlet-context.xml에 mybatis 설정 추가 
+	위치 : src > main > webapp > WEB-INF > spring > appServlet > servlet-context.xml
+	
+	
+	<!-- mybatis 설정시작 -->
+	<beans:bean name="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean" >
+		<beans:property name="jndiName" value="java:comp/env/jdbc/Oracle11g" /> <!-- context.xml의 컨넥션풀 lookup("java:comp/env/jdbc/Oracle11g") -->
+		<beans:property name="resourceRef" value="true"/>
+	</beans:bean>
+	
+	<beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<beans:property name="dataSource" ref="dataSource" /> <!-- 컨넥션 풀 -->
+		<beans:property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"/><!-- xml의 경로 -->value="classpath:mybatis_member/mapper/*Mapper.xml"
+	</beans:bean>
+	
+	<beans:bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<beans:constructor-arg ref="sqlSessionFactory"/>
+	</beans:bean>
+	<!-- mybatis 설정종료 -->
+	
+
+
+9. Mapper 작성 : mapper.xml생성 후 부터 서블릿이 정상 작동 되지 않는다. (9-3)까지 작성한 후 부터 서블릿 정상 작동하니 (9-3)작성 후, 웹 구동 해 본 후 소스를 작성하는 것이 안전하다
+	(9-1) 파일 생성 (src/main/resources > member_mybatis.mapper > new - other - xml file - memberMapper.xml 생성)
+	
+	(9-2) mybatis.org -> 상단 네비:  products -> Mybatis3 - docs -> 
+			좌측 메뉴: Configuration XML 에서  <mapper>의 <!DOCTYPE>을 복사해 memberMapper.xml에 붙여넣는다
+
+		<!DOCTYPE mapper
+		    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	(9-3) mapper 작성 
+	
+		<mapper namespace="패키지명.MemberDAO">
+			sql작성
+		</mapper>
+		
+		
+	*** 메소드 하나 당 항상 레벨이 맞아야한다(구현까지 완전하게 한 후, 작동시켜야한다) ***
+		컨트롤:서비스 호출 -> 서비스:Reposity 호출(DAO) -> Reposity:mapper 호출 
+
+
+10. ojdbc6.jar을 붙여넣는다 -> JRE System Library에서 확인가능 (없다면 이클립스 다시시작)
+	위치 : C:\Program Files\Java\jre1.8.0_172\lib\ext
+	
+	
+
+
+11. 파일 업로드
+	(11-1) pom.xml 에 등록
+	
+		<!-- 파일 업로드 등록 -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		<!-- 파일 업로드 등록 완료 -->	
+	
+	(11-2) servlet-context.xml 설정
+	 
+		<!-- MultipartResolver 설정 -->
+		<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+			<beans:property name="maxUploadSize" value="100000000"/>
+			<beans:property name="maxInMemorySize" value="100000000"/>
+		</beans:bean>
+	
+	(11-3) 컨트롤러 작성
+	
+		@RequestMapping(value="inventory_addPro", method=RequestMethod.POST)
+		public String inventory_addPro(MultipartHttpServletRequest req, Model model) {
+			
+			service.inventory_add(req, model);
+			service.inventory_list(req, model);
+			
+			return "host/inventory_add";
+		}
+	
+	
+	
+<주요 오류>
+1. OracleDriver 에러
+** java.lang.ClassNotFoundException : oracle.jdbc.driver.OracleDriver 에러
+또는 Cannot load JDBC driver class 'oracle.jdbc.driver.OracleDriver' with root cause 오류시
+
+C:\oraclexe\app\oracle\product\11.2.0\server\jdbc\lib\ojdbc6.jar 복사해 
+C:\Program Files\Java\jre1.8.0_161\lib\ext - ojdbc6.jar 붙여넣는다
+이클립스 종료 후 재실행 -> JRE SYSTEM Library에서 확인 가능
+
+
+2. 컨텍스트(3레벨의 패키지) 충돌 오류
+	(2-1)
+		톰캣 우클릭 -> Add And Remove 선택 -> remove All
+	(2-2)
+		플젝 우클릭 -> Properties -> Web Project Setting -> Context root : 변경
+	(2-3)
+		톰캣 더블 클릭 -> 하단 모듈 탭 선택 -> 중복 path 클릭 -> edit 버튼 클릭해 수정

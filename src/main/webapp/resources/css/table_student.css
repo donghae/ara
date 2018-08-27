@@ -1,0 +1,414 @@
+table {
+  border-spacing: 1;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 80%;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  vertical-align:center;
+}
+
+.st_navy input,.st_mint input,.st_red input,.st_beige input{
+    color:  black;
+    /* box-sizing: border-box; */
+    /* width: 300px; */
+    box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.08);
+    padding: 12px;
+    border: 1px solid #dbdbdb;
+   align:left;  
+}
+
+.st_navy select,.st_mint select,.st_red select,.st_beige select{
+    background-color: #ffffff;
+    color:  black;
+    box-sizing: border-box;
+    max-width: 240px;
+    box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.08);
+    padding: 12px 8px;
+    border: 1px solid #dbdbdb;
+}
+
+
+
+.st_mint {
+  position: relative;
+}
+.st_mint td, th {
+  padding-left: 8px;
+}
+.st_mint thead tr {
+  height: 60px;
+  background: #C4E8F6;
+  font-size: 16px;
+}
+.st_mint tbody tr {
+  height: 48px;
+  border-bottom: 1px solid #C4E8F6;
+}
+.st_mint tbody tr:last-child {
+  border: 0;
+}
+.st_mint th, .st_mint td{
+  text-align: center;
+}
+
+
+
+
+@media screen and (max-width: 35.5em) {
+  .st_mint {
+    display: block;
+  }
+  .st_mint > *, .st_mint tr, .st_mint td, .st_mint th {
+    display: block;
+  }
+  .st_mint thead {
+    display: none;
+  }
+  .st_mint tbody tr {
+    height: auto;
+    padding: 8px 0;
+  }
+  .st_mint tbody tr td {
+    padding-left: 45%;
+    margin-bottom: 12px;
+  }
+  .st_mint tbody tr td:last-child {
+    margin-bottom: 0;
+  }
+  .st_mint tbody tr td:before {
+    position: absolute;
+    font-weight: 700;
+    width: 40%;
+    left: 10px;
+    top: 0;
+  }
+  .st_mint tbody tr td:nth-child(1):before {
+    content: "Code";
+  }
+  .st_mint tbody tr td:nth-child(2):before {
+    content: "Stock";
+  }
+  .st_mint tbody tr td:nth-child(3):before {
+    content: "Cap";
+  }
+  .st_mint tbody tr td:nth-child(4):before {
+    content: "Inch";
+  }
+  .st_mint tbody tr td:nth-child(5):before {
+    content: "Box Type";
+  }
+}
+
+
+
+
+
+.st_navy {
+  position: relative;
+}
+.st_navy th{
+	color:#fff;
+	padding-left: 8px;
+}
+.st_navy td {
+  padding-left: 8px;
+  background: #fff;
+}
+.st_navy thead tr {
+  height: 60px;
+  background: #001E42;
+  font-size: 16px;
+  color:#ffffff;
+}
+.st_navy tbody tr {
+  height: 48px;
+  border-bottom: 1px solid #001E42;
+}
+.st_navy tbody tr:last-child {
+  border: 0;
+}
+.st_navy tbody th {
+  background: #001E42;
+  color:#fff;
+}
+.st_navy th, .st_navy td{
+  text-align: center;
+}
+
+
+
+@media screen and (max-width: 35.5em) {
+  .st_navy {
+    display: block;
+  }
+  .st_navy > *, .st_navy tr, .st_navy td, .st_navy th {
+    display: block;
+  }
+  .st_navy thead {
+    display: none;
+  }
+  .st_navy tbody tr {
+    height: auto;
+    padding: 8px 0;
+  }
+  .st_navy tbody tr td {
+    padding-left: 45%;
+    margin-bottom: 12px;
+  }
+  .st_navy tbody tr td:last-child {
+    margin-bottom: 0;
+  }
+  .st_navy tbody tr td:before {
+    position: absolute;
+    font-weight: 700;
+    width: 40%;
+    left: 10px;
+    top: 0;
+  }
+  .st_navy tbody tr td:nth-child(1):before {
+    content: "Code";
+  }
+  .st_navy tbody tr td:nth-child(2):before {
+    content: "Stock";
+  }
+  .st_navy tbody tr td:nth-child(3):before {
+    content: "Cap";
+  }
+  .st_navy tbody tr td:nth-child(4):before {
+    content: "Inch";
+  }
+  .st_navy tbody tr td:nth-child(5):before {
+    content: "Box Type";
+  }
+}
+
+
+
+
+
+.st_red {
+  position: relative;
+}
+.st_red td, th {
+  padding-left: 8px;
+}
+.st_red thead tr {
+  height: 60px;
+  background: #E82929;
+  font-size: 16px;
+  color: #ffffff;
+}
+.st_red tbody tr {
+  height: 48px;
+  border-bottom: 1px solid #E82929;
+}
+.st_red tbody tr:last-child {
+  border: 0;
+}
+.st_red th, .st_red td{
+  text-align: center;
+}
+
+
+
+@media screen and (max-width: 35.5em) {
+  .st_red {
+    display: block;
+  }
+  .st_red > *, .st_red tr, .st_red td, .st_red th {
+    display: block;
+  }
+  .st_red thead {
+    display: none;
+  }
+  .st_red tbody tr {
+    height: auto;
+    padding: 8px 0;
+  }
+  .st_red tbody tr td {
+    padding-left: 45%;
+    margin-bottom: 12px;
+  }
+  .st_red tbody tr td:last-child {
+    margin-bottom: 0;
+  }
+  .st_red tbody tr td:before {
+    position: absolute;
+    font-weight: 700;
+    width: 40%;
+    left: 10px;
+    top: 0;
+  }
+  .st_red tbody tr td:nth-child(1):before {
+    content: "Code";
+  }
+  .st_red tbody tr td:nth-child(2):before {
+    content: "Stock";
+  }
+  .st_red tbody tr td:nth-child(3):before {
+    content: "Cap";
+  }
+  .st_red tbody tr td:nth-child(4):before {
+    content: "Inch";
+  }
+  .st_red tbody tr td:nth-child(5):before {
+    content: "Box Type";
+  }
+}
+
+
+
+
+
+
+
+.st_beige {
+  position: relative;
+}
+.st_beige th, .st_beige td{
+  text-align: center;
+}
+.st_beige thead tr {
+  height: 60px;
+  background: #FDF8F5;
+  font-size: 16px;
+  color: #001E42;
+}
+.st_beige tbody tr {
+  height: 48px;
+  border-bottom: 1px solid #FDF8F5;
+}
+.st_beige tbody tr:last-child {
+  border: 0;
+}
+
+
+
+
+@media screen and (max-width: 35.5em) {
+  .st_beige {
+    display: block;
+  }
+  .st_beige > *, .st_beige tr, .st_beige td, .st_beige th {
+    display: block;
+  }
+  .st_beige thead {
+    display: none;
+  }
+  .st_beige tbody tr {
+    height: auto;
+    padding: 8px 0;
+  }
+  .st_beige tbody tr td {
+    padding-left: 45%;
+    margin-bottom: 12px;
+  }
+  .st_beige tbody tr td:last-child {
+    margin-bottom: 0;
+  }
+  .st_beige tbody tr td:before {
+    position: absolute;
+    font-weight: 700;
+    width: 40%;
+    left: 10px;
+    top: 0;
+  }
+  .st_beige tbody tr td:nth-child(1):before {
+    content: "Code";
+  }
+  .st_beige tbody tr td:nth-child(2):before {
+    content: "Stock";
+  }
+  .st_beige tbody tr td:nth-child(3):before {
+    content: "Cap";
+  }
+  .st_beige tbody tr td:nth-child(4):before {
+    content: "Inch";
+  }
+  .st_beige tbody tr td:nth-child(5):before {
+    content: "Box Type";
+  }
+}
+
+
+.st_navy_login {
+	margin-top: 5%;
+max-width: 30%;
+  width: 30%;
+  position: relative;
+}
+.st_navy_login th{
+	color:#fff;
+	padding-left: 8px;
+}
+.st_navy_login td {
+  padding-left: 8px;
+  background: #fff;
+}
+.st_navy_login thead tr {
+  height: 60px;
+  background: #001E42;
+  font-size: 16px;
+  color:#ffffff;
+}
+.st_navy_login tbody tr {
+  height: 48px;
+  border-bottom: 1px solid #001E42;
+}
+.st_navy_login tbody tr:last-child {
+  border: 0;
+}
+.st_navy_login th, .st_navy_login td{
+  text-align: center;
+}
+
+
+
+@media screen and (max-width: 35.5em) {
+  .st_navy_login {
+    display: block;
+  }
+  .st_nst_navy_loginavy > *, .st_navy_login tr, .st_navy_login td, .st_navy_login th {
+    display: block;
+  }
+  .st_navy_login thead {
+    display: none;
+  }
+  .st_navy_login tbody tr {
+    height: auto;
+    padding: 8px 0;
+  }
+  .st_navy_login tbody tr td {
+    padding-left: 45%;
+    margin-bottom: 12px;
+  }
+  .st_navy_login tbody tr td:last-child {
+    margin-bottom: 0;
+  }
+  .st_navy_login tbody tr td:before {
+    position: absolute;
+    font-weight: 700;
+    width: 40%;
+    left: 10px;
+    top: 0;
+  }
+  .st_navy_login tbody tr td:nth-child(1):before {
+    content: "Code";
+  }
+  .st_navy_login tbody tr td:nth-child(2):before {
+    content: "Stock";
+  }
+  .st_navy_login tbody tr td:nth-child(3):before {
+    content: "Cap";
+  }
+  .st_navy_login tbody tr td:nth-child(4):before {
+    content: "Inch";
+  }
+  .st_navy_login tbody tr td:nth-child(5):before {
+    content: "Box Type";
+  }
+}
